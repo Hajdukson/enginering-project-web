@@ -19,7 +19,7 @@
 ## Użycie technologii
 
 - aplikacja będzie tworzona w technologii .Net
-- identykacja użytkownika ASP .Net Core Identity
+- identyfikacja użytkownika ASP .Net Core Identity
 - baza danych Azure SQL (Virtual Machine dla celów pracy inzynierskiej)
 - front-end React.js, React Native lub Angular.js
 - back-end C#, Entity Framework
