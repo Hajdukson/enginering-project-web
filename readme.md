@@ -20,7 +20,7 @@
 
 - aplikacja będzie tworzona w technologii .Net
 - identyfikacja użytkownika ASP .Net Core Identity
-- baza danych Azure SQL (Virtual Machine dla celów pracy inzynierskiej)
+- baza danych SQL Server
 - front-end React.js, React Native lub Angular.js
 - back-end C#, Entity Framework
 
