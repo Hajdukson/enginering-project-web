@@ -1,21 +1,21 @@
-﻿using MoneyManager.DataAccess.Repository.IRepository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess.Repository
+namespace MoneyManager.DataAccess
 {
     public class UnitOfWork : IUnitOfWork
     {
-        public UnitOfWork()
+        private readonly MoneyManagerDataContext _dataContext;
+        public UnitOfWork(MoneyManagerDataContext dataContext)
         {
-
+            _dataContext = dataContext;
         }
-        public void Save()
+        public async Task Save()
         {
-            
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using MoneyManager.DataAccess.Repository.IRepository;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,37 +6,41 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess.Repository
+namespace MoneyManager.DataAccess
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        public Repository()
+        private readonly MoneyManagerDataContext _dataContext;
+        private readonly DbSet<T> _entities;
+        public Repository(MoneyManagerDataContext dataContext)
         {
-
+            _dataContext = dataContext;
+            _entities = _dataContext.Set<T>();
         }
-        public void Add(T entity)
+        public async Task AddAsync(T entity)
         {
-            
+            await _entities.AddAsync(entity);
         }
-
-        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null)
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _entities.ToListAsync();
         }
-
-        public T GetFirstOrDefault(Expression<Func<T, bool>> filter)
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter)
         {
-            throw new NotImplementedException();
-        }
+            IQueryable<T> entities = _entities;
 
+            entities = entities.Where(filter);
+
+            return await entities.FirstOrDefaultAsync();
+        }
         public void Remove(T entity)
         {
-            throw new NotImplementedException();
+            _entities.Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<T> entity)
+        public void RemoveRange(IEnumerable<T> entities)
         {
-            throw new NotImplementedException();
+            _entities.RemoveRange(entities);
         }
     }
 }

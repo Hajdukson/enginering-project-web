@@ -5,13 +5,13 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess.Repository.IRepository
+namespace MoneyManager.DataAccess
 {
     public interface IRepository<T> where T : class
     {
-        T GetFirstOrDefault(Expression<Func<T, bool>> filter);
-        IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null);
-        void Add(T entity);
+        Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter);
+        Task<IEnumerable<T>> GetAllAsync();
+        Task AddAsync(T entity);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
     }

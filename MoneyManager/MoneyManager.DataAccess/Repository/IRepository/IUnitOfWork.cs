@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess.Repository.IRepository
+namespace MoneyManager.DataAccess
 {
     public interface IUnitOfWork
     {
-        void Save();
+        Task Save();
     }
 }
