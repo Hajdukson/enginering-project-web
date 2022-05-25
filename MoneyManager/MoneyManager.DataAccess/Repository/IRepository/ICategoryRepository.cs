@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoneyManager.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace MoneyManager.DataAccess
 {
-    public interface IUnitOfWork
+    public interface ICategoryRepository : IRepository<Category>
     {
-        ICategoryRepository Category { get; set; }
-        Task SaveAsync();
+        void Update(Category category);
     }
 }

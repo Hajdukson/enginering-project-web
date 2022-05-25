@@ -12,8 +12,10 @@ namespace MoneyManager.DataAccess
         public UnitOfWork(MoneyManagerDataContext dataContext)
         {
             _dataContext = dataContext;
+            Category = new CategoryRepository(_dataContext);
         }
-        public async Task Save()
+        public ICategoryRepository Category { get; set; }
+        public async Task SaveAsync()
         {
             await _dataContext.SaveChangesAsync();
         }
