@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using MoneyManager.Models;
 using MoneyManager.DataAccess;
+using MoneyManager.Models;
 
 namespace MoneyManager.Web.Controllers
 {
@@ -26,93 +21,51 @@ namespace MoneyManager.Web.Controllers
                           View(await _unitOfWork.Category.GetAllAsync()) :
                           Problem("Entity set 'MoneyManagerDataContext.Category'  is null.");
         }
-
-        // GET: Categories/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Categories/Upsert
+        public async Task<IActionResult> Upsert(int? id)
         {
-            if (id == null || _unitOfWork.Category == null)
+            var editCategory = new Category();
+            if (id == 0 || id == null)
             {
-                return NotFound();
+                return View(editCategory);
             }
 
-            var category = await _unitOfWork.Category
-                .GetFirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
+            editCategory = await _unitOfWork.Category.GetFirstOrDefaultAsync(c => c.Id == id);
+            return View(editCategory);
         }
 
-        // GET: Categories/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Categories/Create
+        // POST: Categories/Upsert
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
+        public async Task<IActionResult> Upsert([Bind("Id,Name")] Category category)
         {
             if (ModelState.IsValid)
             {
-                await _unitOfWork.Category.AddAsync(category);
+                if(category.Id != 0)
+                {
+                    try
+                    {
+                        _unitOfWork.Category.Update(category);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!CategoryExists(category.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                }
+                else
+                {
+                    await _unitOfWork.Category.AddAsync(category);
+                }
                 await _unitOfWork.SaveAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
-        }
-
-        // GET: Categories/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _unitOfWork.Category == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _unitOfWork.Category.GetFirstOrDefaultAsync(c => c.Id == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-            return View(category);
-        }
-
-        // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
-        {
-            if (id != category.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _unitOfWork.Category.Update(category);
-                    await _unitOfWork.SaveAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
