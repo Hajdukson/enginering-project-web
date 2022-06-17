@@ -25,6 +25,10 @@ namespace MoneyManager.DataAccess
         {
             return await _entities.ToListAsync();
         }
+        public IEnumerable<T> GetAll()
+        {
+            return _entities.ToList();
+        }
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter)
         {
             IQueryable<T> entities = _entities;

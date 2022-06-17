@@ -12,6 +12,7 @@ namespace MoneyManager.DataAccess
         Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter);
         Task<IEnumerable<T>> GetAllAsync();
         Task AddAsync(T entity);
+        IEnumerable<T> GetAll();
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
     }
