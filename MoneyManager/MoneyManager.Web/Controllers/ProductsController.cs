@@ -19,7 +19,7 @@ namespace MoneyManager.Web.Controllers
         public async Task<IActionResult> Index()
         {
             return _unitOfWork.Product != null ?
-                        View(await _unitOfWork.Product.GetAllAsync()) :
+                        View(await _unitOfWork.Product.GetAllAsync("Category")) :
                         Problem("Entity set 'MoneyManagerDataContext.Product'  is null.");
         }
         // GET: Products/Upsert
@@ -39,7 +39,7 @@ namespace MoneyManager.Web.Controllers
                 return View(productViewModel);
             }
 
-            productViewModel.Product = await _unitOfWork.Product.GetFirstOrDefaultAsync(c => c.Id == id);
+            productViewModel.Product = await _unitOfWork.Product.GetFirstOrDefaultAsync(c => c.Id == id, "Category");
             return View(productViewModel);
         }
 
@@ -78,25 +78,6 @@ namespace MoneyManager.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(productVM);
-        }
-
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _unitOfWork.Product == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _unitOfWork.Product
-                .GetFirstOrDefaultAsync(m => m.Id == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
         }
 
         // POST: Products/Delete/5

@@ -32,7 +32,10 @@
 				</td>
 				<td>
 					<a asp-action="Upsert" asp-route-id="@item.Id">Edit</a> |
-					<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+					<form asp-action="Delete">
+						<input type="hidden" name="id" asp-for="@item.Id" />
+						<input type="submit" value="Delete" class="btn btn-danger" />
+					</form>
 				</td>
 			</tr>
 		}

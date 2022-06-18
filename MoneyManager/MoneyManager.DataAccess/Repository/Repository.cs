@@ -24,23 +24,36 @@ namespace MoneyManager.DataAccess
         {
             await _entities.AddAsync(entity);
         }
-        public async Task<IEnumerable<T>> GetAllAsync()
-        {
-            return await _entities.ToListAsync();
-        }
-        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter)
+        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
         {
             IQueryable<T> entities = _entities;
-
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                IncludeProperties(ref entities, includeProperties);
+            }
+            return await entities.ToListAsync();
+        }
+        public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
+        {
+            IQueryable<T> entities = _entities;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                IncludeProperties(ref entities, includeProperties);
+            }
             entities = entities.Where(filter);
 
             return await entities.FirstOrDefaultAsync();
         }
         #endregion
         #region SYNC METHODS
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAll(string? includeProperties = null)
         {
-            return _entities.ToList();
+            IQueryable<T> entities = _entities;
+            if (!string.IsNullOrEmpty(includeProperties))
+            {
+                IncludeProperties(ref entities, includeProperties);
+            }
+            return entities.ToList();
         }
         public void Remove(T entity)
         {
@@ -51,5 +64,12 @@ namespace MoneyManager.DataAccess
             _entities.RemoveRange(entities);
         }
         #endregion
+        private void IncludeProperties(ref IQueryable<T> entities, string includeProperties)
+        {
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }))
+            {
+                entities = entities.Include(includeProperty);
+            }
+        }
     }
 }
