@@ -10,6 +10,7 @@ namespace MoneyManager.DataAccess
 {
     public class Repository<T> : IRepository<T> where T : class
     {
+        #region CTOR
         private readonly MoneyManagerDataContext _dataContext;
         private readonly DbSet<T> _entities;
         public Repository(MoneyManagerDataContext dataContext)
@@ -17,6 +18,8 @@ namespace MoneyManager.DataAccess
             _dataContext = dataContext;
             _entities = _dataContext.Set<T>();
         }
+        #endregion
+        #region ASYNC METHODS
         public async Task AddAsync(T entity)
         {
             await _entities.AddAsync(entity);
@@ -24,10 +27,6 @@ namespace MoneyManager.DataAccess
         public async Task<IEnumerable<T>> GetAllAsync()
         {
             return await _entities.ToListAsync();
-        }
-        public IEnumerable<T> GetAll()
-        {
-            return _entities.ToList();
         }
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter)
         {
@@ -37,14 +36,20 @@ namespace MoneyManager.DataAccess
 
             return await entities.FirstOrDefaultAsync();
         }
+        #endregion
+        #region SYNC METHODS
+        public IEnumerable<T> GetAll()
+        {
+            return _entities.ToList();
+        }
         public void Remove(T entity)
         {
             _entities.Remove(entity);
         }
-
         public void RemoveRange(IEnumerable<T> entities)
         {
             _entities.RemoveRange(entities);
         }
+        #endregion
     }
 }

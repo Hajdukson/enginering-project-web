@@ -1,0 +1,51 @@
+﻿@model BoughtProductViewModel
+
+<h1>@(Model.BoughtProduct.Id != 0 ? "Edit" : "Add")</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form method="get">
+
+		</form>
+		<form method="post" asp-action="Upsert">
+			<input asp-for="BoughtProduct.Id" hidden />
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group">
+				<div>
+					<label asp-for="BoughtProduct.Price" class="control-label"></label>
+					<input asp-for="BoughtProduct.Price" class="form-control" />
+					<span asp-validation-for="BoughtProduct.Price" class="text-danger" role="alert" />
+				</div>
+				<div>
+					<label asp-for="BoughtProduct.ProductId" class="control-label"></label>
+					<select asp-for="BoughtProduct.ProductId" asp-items="@Model.Products">
+						<option disabled selected>--Select Product--</option>
+					</select>
+					<span asp-validation-for="BoughtProduct.ProductId" role="alert" />
+				</div>
+			</div>
+			<div class="form-group">
+				@if (Model.BoughtProduct.Id != 0)
+				{
+					<input type="submit" value="Update" class="btn btn-primary" />
+				}
+				else
+				{
+					<input type="submit" value="Add" class="btn btn-primary" />
+				}
+			</div>
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+    }

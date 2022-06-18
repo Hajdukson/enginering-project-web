@@ -12,7 +12,10 @@ namespace MoneyManager.DataAccess
         public MoneyManagerDataContext (DbContextOptions<MoneyManagerDataContext> options)
             : base(options)
         {
+           
         }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<BoughtProduct> BoughtProducts { get; set; }
     }
 }
