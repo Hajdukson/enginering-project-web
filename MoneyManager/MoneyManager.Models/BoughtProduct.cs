@@ -13,9 +13,10 @@ namespace MoneyManager.Models
 	{
 		public int Id { get; set; }
 		[Required]
-		public int ProductId { get; set; }
+		public int? ProductId { get; set; }
 		[ValidateNever]
-		public Product Prodcut { get; set; }
+		public Product Product { get; set; }
+		public int Quntity { get; set; }
 		[Required]
 		[Column(TypeName = "decimal(18,4)")]
 		public decimal Price { get; set; }

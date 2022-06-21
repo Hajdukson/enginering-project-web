@@ -9,12 +9,12 @@ namespace MoneyManager.Web.Controllers
     public class ProductsController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
-
+        
         public ProductsController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-
+        #region ACTIONS
         // GET: Products
         public async Task<IActionResult> Index()
         {
@@ -103,7 +103,7 @@ namespace MoneyManager.Web.Controllers
         {
             return (_unitOfWork.Product?.GetAllAsync().Result.Any(e => e.Id == id)).GetValueOrDefault();
         }
-
+        #endregion
         #region API CALLS
         [HttpGet]
         public IActionResult GetAllProducts()

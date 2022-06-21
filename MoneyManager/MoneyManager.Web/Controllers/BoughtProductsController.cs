@@ -13,6 +13,10 @@ namespace MoneyManager.Web.Controllers
         {
             _unitOfWork = unitOfWork;
         }
+        public IActionResult DisplyAvaliableProducts()
+        {
+            return View(nameof(DisplyAvaliableProducts));
+        }
         // GET: BoughtProducts
         public async Task<IActionResult> Index()
         {
@@ -20,42 +24,50 @@ namespace MoneyManager.Web.Controllers
                         View(await _unitOfWork.BoughtProduct.GetAllAsync("Product.Category")) :
                         Problem("Entity set 'MoneyManagerDataContext.BoughtProduct'  is null.");
         }
-        //public async Task<IActionResult> AddProduct(int? id)
-        //{
-        //    var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(p => p.Id == id);
-
-        //    if (id == 0 || id == null)
-        //    {
-        //        return View(nameof(AddProduct));
-        //    }
-
-            
-        //    return View(nameof(AddProduct));
-        //}
-        [HttpGet]
-        public async Task<IActionResult> AddProduct()
+        public async Task<IActionResult> AddProduct(int? id)
         {
-            return View(nameof(AddProduct));
+            if (id == 0 || id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(p => p.Id == id, includeProperties: "Category");
+
+            if(product == null)
+            {
+                return NotFound();
+            }
+
+            var boughtProduct = new BoughtProduct()
+            {
+                ProductId = id,
+                Product = product,
+                Price = 0,
+                Quntity = 1,
+            };
+
+            return View(boughtProduct);
         }
+
 
         // POST: BoughtProducts/Upsert
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upsert(BoughtProductViewModel boughtProductViewModel)
+        public async Task<IActionResult> AddProduct(BoughtProduct boughtProduct)
         {
             if (ModelState.IsValid)
             {
-                if (boughtProductViewModel.BoughtProduct.Id != 0)
+                if (boughtProduct.Id == 0)
                 {
                     try
                     {
-                        _unitOfWork.BoughtProduct.Update(boughtProductViewModel.BoughtProduct);
+                        await _unitOfWork.BoughtProduct.AddAsync(boughtProduct);
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!BoughtProductExists(boughtProductViewModel.BoughtProduct.Id))
+                        if (!BoughtProductExists(boughtProduct.Id))
                         {
                             return NotFound();
                         }
@@ -67,12 +79,12 @@ namespace MoneyManager.Web.Controllers
                 }
                 else
                 {
-                    await _unitOfWork.BoughtProduct.AddAsync(boughtProductViewModel.BoughtProduct);
+                    return NotFound();
                 }
                 await _unitOfWork.SaveAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(DisplyAvaliableProducts));
             }
-            return View(boughtProductViewModel.BoughtProduct);
+            return View(nameof(Index));
         }
 
         // POST: BoughtProducts/Delete/5
