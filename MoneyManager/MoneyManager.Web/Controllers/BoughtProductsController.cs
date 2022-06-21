@@ -15,7 +15,7 @@ namespace MoneyManager.Web.Controllers
         }
         public IActionResult DisplyAvaliableProducts()
         {
-            return View(nameof(DisplyAvaliableProducts));
+            return View();
         }
         // GET: BoughtProducts
         public async Task<IActionResult> Index()
@@ -48,7 +48,6 @@ namespace MoneyManager.Web.Controllers
 
             return View(boughtProduct);
         }
-
 
         // POST: BoughtProducts/Upsert
         // To protect from overposting attacks, enable the specific properties you want to bind to.
