@@ -17,33 +17,25 @@ namespace MoneyManager.Web.Controllers
         public async Task<IActionResult> Index()
         {
             return _unitOfWork.BoughtProduct != null ?
-                        View(await _unitOfWork.BoughtProduct.GetAllAsync()) :
+                        View(await _unitOfWork.BoughtProduct.GetAllAsync("Product.Category")) :
                         Problem("Entity set 'MoneyManagerDataContext.BoughtProduct'  is null.");
         }
-        // GET: BoughtProducts/Upsert
-        public async Task<IActionResult> Upsert(int? id)
+        //public async Task<IActionResult> AddProduct(int? id)
+        //{
+        //    var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(p => p.Id == id);
+
+        //    if (id == 0 || id == null)
+        //    {
+        //        return View(nameof(AddProduct));
+        //    }
+
+            
+        //    return View(nameof(AddProduct));
+        //}
+        [HttpGet]
+        public async Task<IActionResult> AddProduct()
         {
-            var boughtProductViewModel = new BoughtProductViewModel() 
-            {
-                Categories = _unitOfWork.Category.GetAll().Select(c => new SelectListItem()
-                {
-                    Value = c.Id.ToString(),
-                    Text = c.Name
-                }),
-                Products = _unitOfWork.Product.GetAll().Select(p => new SelectListItem() 
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Name
-                })
-            };
-
-            if (id == 0 || id == null)
-            {
-                return View(boughtProductViewModel);
-            }
-
-            boughtProductViewModel.BoughtProduct = await _unitOfWork.BoughtProduct.GetFirstOrDefaultAsync(c => c.Id == id);
-            return View(boughtProductViewModel);
+            return View(nameof(AddProduct));
         }
 
         // POST: BoughtProducts/Upsert
@@ -81,24 +73,6 @@ namespace MoneyManager.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(boughtProductViewModel.BoughtProduct);
-        }
-
-        // GET: BoughtProducts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _unitOfWork.BoughtProduct == null)
-            {
-                return NotFound();
-            }
-
-            var boughtProduct = await _unitOfWork.BoughtProduct
-                .GetFirstOrDefaultAsync(m => m.Id == id);
-            if (boughtProduct == null)
-            {
-                return NotFound();
-            }
-
-            return View(boughtProduct);
         }
 
         // POST: BoughtProducts/Delete/5

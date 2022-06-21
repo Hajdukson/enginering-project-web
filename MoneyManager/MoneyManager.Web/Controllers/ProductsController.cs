@@ -103,5 +103,14 @@ namespace MoneyManager.Web.Controllers
         {
             return (_unitOfWork.Product?.GetAllAsync().Result.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAllProducts()
+        {
+            var products = _unitOfWork.Product.GetAll(includeProperties: "Category");
+            return Json(new { data = products });
+        }
+        #endregion
     }
 }
