@@ -16,7 +16,7 @@ namespace MoneyManager.Models
         [Required]
         public string Name { get; set; }
         [Required]
-        public int CategoryId { get; set; }
+        public int ProductCategoryId { get; set; }
         [ValidateNever]
         public ProductCategory Category { get; set; }
     }

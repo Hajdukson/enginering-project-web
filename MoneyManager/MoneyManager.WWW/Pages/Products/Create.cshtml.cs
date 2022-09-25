@@ -21,21 +21,24 @@ namespace MoneyManager.WWW.Pages.Products
 
         public IActionResult OnGet()
         {
-        ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategories, "Id", "Name");
             return Page();
         }
 
         [BindProperty]
         public Product Product { get; set; } = default!;
-        
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Products == null || Product == null)
+            if (!ModelState.IsValid || _context.Products == null || Product == null)
             {
                 return Page();
             }
+            var category = await _context.ProductCategories.FindAsync(Product.ProductCategoryId);
+
+            Product.Category = category;
 
             _context.Products.Add(Product);
             await _context.SaveChangesAsync();

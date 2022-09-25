@@ -25,18 +25,18 @@ namespace MoneyManager.WWW.Pages.Categories
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public ProductCategory Category { get; set; } = default!;
         
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Categories == null || Category == null)
+          if (!ModelState.IsValid || _context.ProductCategories == null || Category == null)
             {
                 return Page();
             }
 
-            _context.Categories.Add(Category);
+            _context.ProductCategories.Add(Category);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");

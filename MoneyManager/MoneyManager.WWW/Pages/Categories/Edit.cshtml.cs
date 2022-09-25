@@ -21,16 +21,16 @@ namespace MoneyManager.WWW.Pages.Categories
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public ProductCategory Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context.ProductCategories == null)
             {
                 return NotFound();
             }
 
-            var category =  await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
+            var category =  await _context.ProductCategories.FirstOrDefaultAsync(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -71,7 +71,7 @@ namespace MoneyManager.WWW.Pages.Categories
 
         private bool CategoryExists(int id)
         {
-          return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.ProductCategories?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

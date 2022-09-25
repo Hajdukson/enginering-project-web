@@ -19,7 +19,7 @@ namespace MoneyManager.WWW.Pages.Categories
         }
 
         [BindProperty]
-        public Category Category { get; set; } = default!;
+        public ProductCategory Category { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -28,7 +28,7 @@ namespace MoneyManager.WWW.Pages.Categories
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _context.ProductCategories.FirstOrDefaultAsync(m => m.Id == id);
 
             if (category == null)
             {
