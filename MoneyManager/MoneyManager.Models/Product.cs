@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using MoneyManager.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,6 +18,6 @@ namespace MoneyManager.Models
         [Required]
         public int CategoryId { get; set; }
         [ValidateNever]
-        public Category Category { get; set; }
+        public ProductCategory Category { get; set; }
     }
 }
