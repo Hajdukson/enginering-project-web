@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using MoneyManager.Models;
 using MoneyManager.WWW.Data;
-using MoneyManager.WWW.Models;
 
 namespace MoneyManager.WWW.Pages.Categories
 {
@@ -19,14 +19,30 @@ namespace MoneyManager.WWW.Pages.Categories
             _context = context;
         }
 
-        public IList<Category> Category { get;set; } = default!;
+        public IList<Category> Categoires { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
-            if (_context.Category != null)
+            if (_context.Categories != null)
             {
-                Category = await _context.Category.ToListAsync();
+                Categoires = await _context.Categories.ToListAsync();
             }
+        }
+        public async Task<IActionResult> OnPostAsync(int? id)
+        {
+            if (id == null || _context.Categories == null)
+            {
+                return NotFound();
+            }
+            var category = await _context.Categories.FindAsync(id);
+
+            if (category != null)
+            {
+                _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("./Index");
         }
     }
 }

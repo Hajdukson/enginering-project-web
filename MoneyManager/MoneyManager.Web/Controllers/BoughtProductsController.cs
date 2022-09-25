@@ -22,7 +22,7 @@ namespace MoneyManager.Web.Controllers
         {
             return _unitOfWork.BoughtProduct != null ?
                         View(await _unitOfWork.BoughtProduct.GetAllAsync("Product.Category")) :
-                        Problem("Entity set 'MoneyManagerDataContext.BoughtProduct'  is null.");
+                        Problem("Entity set 'MoneyManagerWWWContext.BoughtProduct'  is null.");
         }
         public async Task<IActionResult> AddProduct(int? id)
         {
@@ -93,7 +93,7 @@ namespace MoneyManager.Web.Controllers
         {
             if (_unitOfWork.BoughtProduct == null)
             {
-                return Problem("Entity set 'MoneyManagerDataContext.BoughtProduct'  is null.");
+                return Problem("Entity set 'MoneyManagerWWWContext.BoughtProduct'  is null.");
             }
             var boughtProduct = await _unitOfWork.BoughtProduct.GetFirstOrDefaultAsync(c => c.Id == id);
             if (boughtProduct != null)

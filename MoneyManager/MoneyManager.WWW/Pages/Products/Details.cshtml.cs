@@ -6,37 +6,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
+using MoneyManager.WWW.Data;
 
-namespace MoneyManager.WWW.Pages.Categories
+namespace MoneyManager.WWW.Pages.Products
 {
-    public class DeleteModel : PageModel
+    public class DetailsModel : PageModel
     {
         private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
 
-        public DeleteModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public DetailsModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
         {
             _context = context;
         }
 
-        [BindProperty]
-        public Category Category { get; set; } = default!;
+      public Product Product { get; set; } = default!; 
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Categories == null)
+            if (id == null || _context.Products == null)
             {
                 return NotFound();
             }
 
-            var category = await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
-
-            if (category == null)
+            var product = await _context.Products.FirstOrDefaultAsync(m => m.Id == id);
+            if (product == null)
             {
                 return NotFound();
             }
-            else
+            else 
             {
-                Category = category;
+                Product = product;
             }
             return Page();
         }

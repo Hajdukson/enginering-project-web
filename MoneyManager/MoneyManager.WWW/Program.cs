@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MoneyManager.DataAccess;
 using MoneyManager.WWW.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +9,32 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<MoneyManagerWWWContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoneyManagerWWWContext") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
-//builder.Services.AddDbContext<MoneyManagerDataContext>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerDataContext' not found.")));
+builder.Services.AddDbContext<MoneyManagerWWWContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
 
-//builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // To preserve the default behavior, capture the original delegate to call later.
+        var builtInFactory = options.InvalidModelStateResponseFactory;
+
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var logger = context.HttpContext.RequestServices
+                                .GetRequiredService<ILogger<Program>>();
+
+            // Perform logging here.
+            // ...
+
+            // Invoke the default behavior, which produces a ValidationProblemDetails
+            // response.
+            // To produce a custom response, return a different implementation of 
+            // IActionResult instead.
+            return builtInFactory(context);
+        };
+    });
 
 var app = builder.Build();
 
@@ -31,5 +54,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapControllers();
 
 app.Run();

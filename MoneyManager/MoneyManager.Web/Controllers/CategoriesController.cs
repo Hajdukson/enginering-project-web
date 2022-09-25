@@ -19,7 +19,7 @@ namespace MoneyManager.Web.Controllers
         {
               return _unitOfWork.Category != null ? 
                           View(await _unitOfWork.Category.GetAllAsync()) :
-                          Problem("Entity set 'MoneyManagerDataContext.Category'  is null.");
+                          Problem("Entity set 'MoneyManagerWWWContext.Category'  is null.");
         }
         // GET: Categories/Upsert
         public async Task<IActionResult> Upsert(int? id)
@@ -78,7 +78,7 @@ namespace MoneyManager.Web.Controllers
         {
             if (_unitOfWork.Category == null)
             {
-                return Problem("Entity set 'MoneyManagerDataContext.Category'  is null.");
+                return Problem("Entity set 'MoneyManagerWWWContext.Category'  is null.");
             }
             var category = await _unitOfWork.Category.GetFirstOrDefaultAsync(c => c.Id == id);
             if (category != null)

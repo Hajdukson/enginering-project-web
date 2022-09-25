@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MoneyManager.WWW.Models;
+using MoneyManager.Models;
 
 namespace MoneyManager.WWW.Data
 {
@@ -14,6 +14,8 @@ namespace MoneyManager.WWW.Data
         {
         }
 
-        public DbSet<MoneyManager.WWW.Models.Category>? Category { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<BoughtProduct> BoughtProducts { get; set; }
     }
 }

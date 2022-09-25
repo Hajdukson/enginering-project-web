@@ -20,7 +20,7 @@ namespace MoneyManager.Web.Controllers
         {
             return _unitOfWork.Product != null ?
                         View(await _unitOfWork.Product.GetAllAsync("Category")) :
-                        Problem("Entity set 'MoneyManagerDataContext.Product'  is null.");
+                        Problem("Entity set 'MoneyManagerWWWContext.Product'  is null.");
         }
         // GET: Products/Upsert
         public async Task<IActionResult> Upsert(int? id)
@@ -87,7 +87,7 @@ namespace MoneyManager.Web.Controllers
         {
             if (_unitOfWork.Product == null)
             {
-                return Problem("Entity set 'MoneyManagerDataContext.Product'  is null.");
+                return Problem("Entity set 'MoneyManagerWWWContext.Product'  is null.");
             }
             var product = await _unitOfWork.Product.GetFirstOrDefaultAsync(c => c.Id == id);
             if (product != null)
