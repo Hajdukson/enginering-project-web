@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyManager.DataAccess;
+using MoneyManager.Services;
+using MoneyManager.Services.Interfeces;
 using MoneyManager.WWW.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +15,8 @@ builder.Services.AddDbContext<MoneyManagerWWWContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICalculator, ExpenseCalculator>();
+
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
