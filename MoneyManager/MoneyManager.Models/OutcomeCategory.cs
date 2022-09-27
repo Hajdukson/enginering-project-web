@@ -2,7 +2,7 @@
 
 namespace MoneyManager.Models
 {
-    public class SingleOutcomeCategory : Category
+    public class OutcomeCategory : Category
     {
     }
 }

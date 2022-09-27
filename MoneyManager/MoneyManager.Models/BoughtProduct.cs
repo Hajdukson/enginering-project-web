@@ -13,7 +13,7 @@ namespace MoneyManager.Models
 	{
 		public int Id { get; set; }
 		[Required]
-		public int? ProductId { get; set; }
+		public int ProductId { get; set; }
 		[ValidateNever]
 		public Product Product { get; set; }
 		public int Quntity { get; set; }
