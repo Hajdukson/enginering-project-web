@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MoneyManager.Models;
 using MoneyManager.WWW.Data;
 
 namespace MoneyManager.WWW.Controllers
@@ -29,30 +30,19 @@ namespace MoneyManager.WWW.Controllers
         {
             return View();
         }
-
-        // GET: api/Items/Create
-        public ActionResult Create()
+        // GET: api/Items/Edit/5
+        public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: api/Items/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        // POST api/Items/AddIncome
+        public ActionResult AddIncome(Income income)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
-
-        // GET: api/Items/Edit/5
-        public ActionResult Edit(int id)
+        // POST api/Items/AddOutcome
+        public ActionResult AddOutcome(Outcome outcome)
         {
             return View();
         }
