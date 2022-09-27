@@ -26,7 +26,7 @@ namespace MoneyManager.WWW.Pages.Products
             if (_context.Products != null)
             {
                 Product = await _context.Products
-                .Include(p => p.Category).ToListAsync();
+                .Include(p => p.ProductCategory).ToListAsync();
             }
         }
     }

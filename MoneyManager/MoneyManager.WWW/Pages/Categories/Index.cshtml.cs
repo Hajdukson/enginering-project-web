@@ -19,30 +19,14 @@ namespace MoneyManager.WWW.Pages.Categories
             _context = context;
         }
 
-        public IList<ProductCategory> Categoires { get;set; } = default!;
+        public IList<Category> Categoires { get;set; } = default!;
 
         public async Task OnGetAsync()
         {
             if (_context.Categories != null)
             {
-                Categoires = await _context.ProductCategories.ToListAsync();
+                Categoires = await _context.Categories.ToListAsync();
             }
         }
-        //public async Task<IActionResult> OnPostAsync(int? id)
-        //{
-        //    if (id == null || _context.Categories == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    var category = await _context.Categories.FindAsync(id);
-
-        //    if (category != null)
-        //    {
-        //        _context.Categories.Remove(category);
-        //        await _context.SaveChangesAsync();
-        //    }
-
-        //    return RedirectToPage("./Index");
-        //}
     }
 }

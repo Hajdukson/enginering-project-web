@@ -8,14 +8,14 @@ namespace MoneyManager.WWW.Data
         public MoneyManagerWWWContext (DbContextOptions<MoneyManagerWWWContext> options)
             : base(options)
         {
-        }
 
+        }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
-        public DbSet<SingleOutcomeCategory> SingleOutcomeCategories { get; set; }
-        public DbSet<Item> Items { get; set; }
+        public DbSet<OutcomeCategory> OutcomeCategories { get; set; }
+        public DbSet<IncomeCategory> IncomeCategories { get; set; }
         public DbSet<Income> Incomes { get; set; }
-        public DbSet<Item> Outcomes { get; set; }
+        public DbSet<Outcome> Outcomes { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<BoughtProduct> BoughtProducts { get; set; }
     }

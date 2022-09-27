@@ -8,39 +8,35 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using MoneyManager.Models;
 using MoneyManager.WWW.Data;
 
-namespace MoneyManager.WWW.Pages.Products
+namespace MoneyManager.WWW.Pages.Categories
 {
-    public class CreateModel : PageModel
+    public class CreateIncomeCategory : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
+        private readonly MoneyManagerWWWContext _context;
 
-        public CreateModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public CreateIncomeCategory(MoneyManagerWWWContext context)
         {
             _context = context;
         }
 
         public IActionResult OnGet()
         {
-            ViewData["ProductCategoryId"] = new SelectList(_context.ProductCategories, "Id", "Name");
             return Page();
         }
 
         [BindProperty]
-        public Product Product { get; set; } = default!;
-
+        public IncomeCategory Category { get; set; } = default!;
+        
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid || _context.Products == null || Product == null)
+          if (!ModelState.IsValid || _context.IncomeCategories == null || Category == null)
             {
                 return Page();
             }
-            var category = await _context.ProductCategories.FindAsync(Product.ProductCategoryId);
 
-            Product.ProductCategory = category;
-
-            _context.Products.Add(Product);
+            _context.IncomeCategories.Add(Category);
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
