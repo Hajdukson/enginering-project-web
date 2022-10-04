@@ -16,9 +16,9 @@ namespace MoneyManager.DataAccess
     public class Repository<T> : IRepository<T> where T : class
     {
         #region CTOR
-        private readonly MoneyManagerWWWContext _dataContext;
+        private readonly MoneyManagerContext _dataContext;
         private readonly DbSet<T> _entities;
-        public Repository(MoneyManagerWWWContext dataContext)
+        public Repository(MoneyManagerContext dataContext)
         {
             _dataContext = dataContext;
             _entities = _dataContext.Set<T>();

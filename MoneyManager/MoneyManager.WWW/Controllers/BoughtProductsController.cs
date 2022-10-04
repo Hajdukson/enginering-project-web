@@ -14,9 +14,9 @@ namespace MoneyManager.WWW.Controllers
     [ApiController]
     public class BoughtProductsController : ControllerBase
     {
-        private readonly MoneyManagerWWWContext _context;
+        private readonly MoneyManagerContext _context;
 
-        public BoughtProductsController(MoneyManagerWWWContext context)
+        public BoughtProductsController(MoneyManagerContext context)
         {
             _context = context;
         }
@@ -25,25 +25,29 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetBoughtProducts()
         {
-          if (_context.BoughtProducts == null)
-          {
-              return NotFound();
-          }
-            return await _context.BoughtProducts
-                .Include(b => b.Product.Category)
+            if (_context.BoughtProducts == null)
+            {
+                return NotFound();
+            }
+
+            var products = await _context.BoughtProducts
+                .Include(b => b.Product)
+                .ThenInclude(b => b.ProductCategory)
                 .ToListAsync();
+
+            return products;
         }
 
         // GET: api/BoughtProducts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<BoughtProduct>> GetBoughtProduct(int id)
         {
-          if (_context.BoughtProducts == null)
-          {
-              return NotFound();
-          }
+            if (_context.BoughtProducts == null)
+            {
+                return NotFound();
+            }
             var boughtProduct = await _context.BoughtProducts
-                .Include(b => b.Product.Category)
+                .Include(b => b.Product.ProductCategory)
                 .FirstAsync(b => b.Id == id);
 
             if (boughtProduct == null)
@@ -90,10 +94,10 @@ namespace MoneyManager.WWW.Controllers
         [HttpPost]
         public async Task<ActionResult<BoughtProduct>> PostBoughtProduct(BoughtProduct boughtProduct)
         {
-          if (_context.BoughtProducts == null)
-          {
-              return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
-          }
+            if (_context.BoughtProducts == null)
+            {
+                return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
+            }
             _context.BoughtProducts.Add(boughtProduct);
             await _context.SaveChangesAsync();
 

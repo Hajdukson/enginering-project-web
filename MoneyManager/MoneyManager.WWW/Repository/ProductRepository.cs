@@ -11,8 +11,8 @@ namespace MoneyManager.DataAccess
 {
     public class ProductRepository : Repository<Product>, IProductRepository
     {
-        private readonly MoneyManagerWWWContext _dbContext;
-        public ProductRepository(MoneyManagerWWWContext dbContext) : base(dbContext)
+        private readonly MoneyManagerContext _dbContext;
+        public ProductRepository(MoneyManagerContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

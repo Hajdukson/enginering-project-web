@@ -13,9 +13,9 @@ namespace MoneyManager.WWW.Pages.Products
 {
     public class EditModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
+        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
 
-        public EditModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public EditModel(MoneyManager.WWW.Data.MoneyManagerContext context)
         {
             _context = context;
         }

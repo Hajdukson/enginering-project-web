@@ -12,9 +12,9 @@ namespace MoneyManager.WWW.Pages.Products
 {
     public class CreateModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
+        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
 
-        public CreateModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public CreateModel(MoneyManager.WWW.Data.MoneyManagerContext context)
         {
             _context = context;
         }

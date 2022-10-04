@@ -11,9 +11,9 @@ namespace MoneyManager.WWW.Pages.Categories
 {
     public class DeleteModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
+        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
 
-        public DeleteModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public DeleteModel(MoneyManager.WWW.Data.MoneyManagerContext context)
         {
             _context = context;
         }

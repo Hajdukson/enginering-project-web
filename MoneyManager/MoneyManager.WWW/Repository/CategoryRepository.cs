@@ -11,8 +11,8 @@ namespace MoneyManager.DataAccess
 {
     public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
-        private readonly MoneyManagerWWWContext _dbContext;
-        public CategoryRepository(MoneyManagerWWWContext dbContext) : base(dbContext)
+        private readonly MoneyManagerContext _dbContext;
+        public CategoryRepository(MoneyManagerContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }

@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Protocol;
+using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.WWW.Data;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
 
 namespace MoneyManager.WWW.Controllers
 {
@@ -11,24 +16,43 @@ namespace MoneyManager.WWW.Controllers
     [ApiController]
     public class ItemsController : Controller
     {
-        private readonly MoneyManagerWWWContext _context;
+        private readonly MoneyManagerContext _context;
+        private readonly List<Item> _items;
 
-        public ItemsController(MoneyManagerWWWContext context)
+        public ItemsController(MoneyManagerContext context)
         {
             _context = context;
+            _items = new List<Item>();
         }
+        private List<Item> CreateItemsList()
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
+            var items = new List<Item>();
+            items.AddRange(_context.Incomes.Include(c => c.IncomeCategory));
+            items.AddRange(_context.Outcomes.Include(c => c.OutcomeCategory));
+            items = items.Where(u => u.ApplicatioUserId == claim.Value).ToList();
+
+            return items;
+        }
         // GET: api/Items
         [HttpGet]
-        public ActionResult Index()
+        [Authorize]
+        public ActionResult<IEnumerable<Item>> Index()
         {
-            return Ok("Items here");
+            var itmes = CreateItemsList();
+            return itmes;
         }
 
-        // GET: api/Items/Details/5
-        public ActionResult Details(int id)
+        // GET: api/Items/Details/
+        [HttpGet]
+        [Route("details")]
+        public ActionResult<Item> Details(int id, ItemType itemType)
         {
-            return View();
+            var itmes = CreateItemsList();
+            var item = itmes.First(i => i.Id == id && i.Type == itemType);
+            return item;
         }
         // GET: api/Items/Edit/5
         public ActionResult Edit(int id)
@@ -36,15 +60,33 @@ namespace MoneyManager.WWW.Controllers
             return View();
         }
 
-        // POST api/Items/AddIncome
-        public ActionResult AddIncome(Income income)
+        // POST api/Items/Add-Income
+        [HttpPost("addincome")]
+        public ActionResult<Income> AddIncome([FromBody] Income income)
         {
-            return View();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            income.ApplicatioUserId = claim.Value;
+
+            _context.Incomes.Add(income);
+            _context.SaveChanges();
+
+            return CreatedAtAction("income", new { id = income.Id }, income);
         }
-        // POST api/Items/AddOutcome
-        public ActionResult AddOutcome(Outcome outcome)
+        // POST api/Items/Add-Outcome
+        [HttpPost("addoutcome")]
+        public ActionResult<Outcome> AddOutcome([FromBody] Outcome outcome)
         {
-            return View();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            outcome.ApplicatioUserId = claim.Value;
+
+            _context.Outcomes.Add(outcome);
+            _context.SaveChanges();
+
+            return CreatedAtAction("outcome", new { id = outcome.Id }, outcome);
         }
 
         // POST: api/Items/Edit/5

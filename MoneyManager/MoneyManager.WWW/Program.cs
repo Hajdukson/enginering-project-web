@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyManager.DataAccess;
@@ -9,10 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<MoneyManagerWWWContext>(options =>
+builder.Services.AddDbContext<MoneyManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoneyManagerWWWContext") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
-builder.Services.AddDbContext<MoneyManagerWWWContext>(options =>
+builder.Services.AddDbContext<MoneyManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>()
+    .AddEntityFrameworkStores<MoneyManagerContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICalculator, ExpenseCalculator>();
@@ -52,9 +56,11 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseDefaultFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRazorPages();

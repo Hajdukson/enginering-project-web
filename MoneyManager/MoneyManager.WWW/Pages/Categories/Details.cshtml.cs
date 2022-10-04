@@ -12,9 +12,9 @@ namespace MoneyManager.WWW.Pages.Categories
 {
     public class DetailsModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerWWWContext _context;
+        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
 
-        public DetailsModel(MoneyManager.WWW.Data.MoneyManagerWWWContext context)
+        public DetailsModel(MoneyManager.WWW.Data.MoneyManagerContext context)
         {
             _context = context;
         }

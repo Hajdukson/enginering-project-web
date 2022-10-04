@@ -13,8 +13,8 @@ namespace MoneyManager.DataAccess
     /// </summary>
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly MoneyManagerWWWContext _dataContext;
-        public UnitOfWork(MoneyManagerWWWContext dataContext)
+        private readonly MoneyManagerContext _dataContext;
+        public UnitOfWork(MoneyManagerContext dataContext)
         {
             _dataContext = dataContext;
             Category = new CategoryRepository(_dataContext);
