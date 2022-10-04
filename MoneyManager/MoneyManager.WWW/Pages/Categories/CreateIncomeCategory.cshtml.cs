@@ -10,11 +10,11 @@ using MoneyManager.WWW.Data;
 
 namespace MoneyManager.WWW.Pages.Categories
 {
-    public class CreateIncomeCategory : PageModel
+    public class CreateIncomeCategoryModel : PageModel
     {
         private readonly MoneyManagerContext _context;
 
-        public CreateIncomeCategory(MoneyManagerContext context)
+        public CreateIncomeCategoryModel(MoneyManagerContext context)
         {
             _context = context;
         }
