@@ -9,8 +9,8 @@ namespace MoneyManager.Services.Interfeces
 {
     public interface ICalculator
     {
-        decimal CalculateBalance(List<IItem> items);
-        decimal CalculateIncome(List<IItem> items);
-        decimal CalculateOutcome(List<IItem> items);
+        decimal CalculateBalance(List<Item> items);
+        decimal CalculateIncome(List<Item> items);
+        decimal CalculateOutcome(List<Item> items);
     }
 }

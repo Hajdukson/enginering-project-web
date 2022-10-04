@@ -8,13 +8,13 @@ namespace MoneyManager.Tests
 {
     public class CalculationTests
     {
-        ICalculator _incomeCalculator;
-        List<IItem> _items;
+        ICalculator _calculator;
+        List<Item> _items;
 
         [SetUp]
         public void SetUp()
         {
-            _incomeCalculator = new ExpenseCalculator();
+            _calculator = new ExpenseCalculator();
 
             var incomes = new List<Income> // 364.75
             {
@@ -33,7 +33,7 @@ namespace MoneyManager.Tests
                 new Outcome() {Price = 5.0m},
             };
 
-            _items = new List<IItem>();
+            _items = new List<Item>();
             _items.AddRange(outcomes);
             _items.AddRange(incomes);
 
@@ -43,7 +43,7 @@ namespace MoneyManager.Tests
         public void IncomeSumTest()
         {
             var expected = 364.75m;
-            var actual = _incomeCalculator.CalculateIncome(_items);
+            var actual = _calculator.CalculateIncome(_items);
 
             Assert.AreEqual(expected, actual);
         }
@@ -51,7 +51,7 @@ namespace MoneyManager.Tests
         public void OutcomeSumTest()
         {
             var expected = 146.00m;
-            var actual = _incomeCalculator.CalculateOutcome(_items);
+            var actual = _calculator.CalculateOutcome(_items);
 
             Assert.AreEqual(expected, actual);
         }
@@ -59,7 +59,7 @@ namespace MoneyManager.Tests
         public void BalanceTest()
         {
             var expected = 218.75m;
-            var actual = _incomeCalculator.CalculateBalance(_items);
+            var actual = _calculator.CalculateBalance(_items);
 
             Assert.AreEqual(expected, actual);
         }
