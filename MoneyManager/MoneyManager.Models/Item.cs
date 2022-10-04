@@ -1,10 +1,12 @@
 ﻿
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoneyManager.Models
 {
-    public class Item : IItem
+    public class Item
     {
         public int Id { get; set; }
         [Required]
@@ -13,8 +15,18 @@ namespace MoneyManager.Models
         public DateTime TransactionDate { get; set; }
         [Required]
         [Column(TypeName = "decimal(18,4)")]
-        public decimal Price { get ; set; }
-        [Required]
+        public decimal Price { get ; set; } 
+        [NotMapped]
         public virtual ItemType Type { get ; }
+        public string ApplicatioUserId { get; set; }
+        [ValidateNever]
+        [ForeignKey("ApplicatioUserId")]
+        public ApplicatioUser ApplicatioUser { get; set; }
+    }
+
+    public enum ItemType
+    {
+        Income,
+        Outcome
     }
 }
