@@ -24,7 +24,7 @@ namespace MoneyManager.WWW.Controllers
             _context = context;
             _items = new List<Item>();
         }
-        private List<Item> CreateItemsList()
+        private List<Item> GetItemsList()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -41,7 +41,7 @@ namespace MoneyManager.WWW.Controllers
         [Authorize]
         public ActionResult<IEnumerable<Item>> Index()
         {
-            var itmes = CreateItemsList();
+            var itmes = GetItemsList();
             return itmes;
         }
 
@@ -50,7 +50,7 @@ namespace MoneyManager.WWW.Controllers
         [Route("details")]
         public ActionResult<Item> Details(int id, ItemType itemType)
         {
-            var itmes = CreateItemsList();
+            var itmes = GetItemsList();
             var item = itmes.First(i => i.Id == id && i.Type == itemType);
             return item;
         }
@@ -62,31 +62,31 @@ namespace MoneyManager.WWW.Controllers
 
         // POST api/Items/Add-Income
         [HttpPost("addincome")]
-        public ActionResult<Income> AddIncome([FromBody] Income income)
+        public async Task<ActionResult<Income>> AddIncome([FromBody] Income income)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             income.ApplicatioUserId = claim.Value;
 
-            _context.Incomes.Add(income);
-            _context.SaveChanges();
+            await _context.Incomes.AddAsync(income);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("income", new { id = income.Id }, income);
+            return CreatedAtAction(nameof(AddIncome), income);
         }
         // POST api/Items/Add-Outcome
         [HttpPost("addoutcome")]
-        public ActionResult<Outcome> AddOutcome([FromBody] Outcome outcome)
+        public async Task<ActionResult<Outcome>> AddOutcome([FromBody] Outcome outcome)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             outcome.ApplicatioUserId = claim.Value;
 
-            _context.Outcomes.Add(outcome);
-            _context.SaveChanges();
+            await _context.Outcomes.AddAsync(outcome);
+            await _context.SaveChangesAsync();
 
-            return CreatedAtAction("outcome", new { id = outcome.Id }, outcome);
+            return CreatedAtAction(nameof(AddOutcome), outcome);
         }
 
         // POST: api/Items/Edit/5
