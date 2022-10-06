@@ -18,10 +18,10 @@ namespace MoneyManager.Models
         public decimal Price { get ; set; } 
         [NotMapped]
         public virtual ItemType Type { get ; }
-        public string ApplicatioUserId { get; set; }
+        public string IdentityUserId { get; set; }
         [ValidateNever]
-        [ForeignKey("ApplicatioUserId")]
-        public ApplicatioUser ApplicatioUser { get; set; }
+        [ForeignKey("IdentityUserId")]
+        public IdentityUser IdentityUser { get; set; }
     }
 
     public enum ItemType

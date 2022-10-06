@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 namespace MoneyManager.Models
 {
-    public class ApplicatioUser : IdentityUser
+    public class ApplicationUser : IdentityUser
     {
-        [Required]
         public string Name { get; set; }
     }
 }
