@@ -1,19 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MoneyManager.Models;
 using MoneyManager.Models.DTOs;
 using MoneyManager.Services.Interfeces;
 using MoneyManager.WWW.Data;
-using NuGet.Protocol.Core.Types;
 using System.Data;
-using System.Net;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 
 namespace MoneyManager.WWW.Controllers
@@ -23,6 +15,7 @@ namespace MoneyManager.WWW.Controllers
     [ApiController]
     public class ItemsController : Controller
     {
+        #region CTOR, PRIVETE FIELDS
         private readonly ICalculator _expenseCalculator;
         private readonly MoneyManagerContext _context;
         private readonly List<Item> _items;
@@ -33,6 +26,9 @@ namespace MoneyManager.WWW.Controllers
             _items = new List<Item>();
             _expenseCalculator = expenseCalculator;
         }
+        #endregion
+
+        #region GET ALL ITEMS
         private async Task<List<Item>> GetItemsList()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
@@ -57,7 +53,6 @@ namespace MoneyManager.WWW.Controllers
         }
         
         [HttpGet]
-        [Authorize]
         public async Task<ActionResult<ItemsDTO>> Index()
         {
             ItemsDTO itemsDTO = new ItemsDTO();
@@ -79,7 +74,9 @@ namespace MoneyManager.WWW.Controllers
 
             return BadRequest();
         }
+        #endregion
 
+        #region GET ITEM DETAILS
         [HttpGet]
         [Route("details")]
         public async Task<ActionResult<Item>> Details(int? id)
@@ -94,7 +91,9 @@ namespace MoneyManager.WWW.Controllers
 
             return NotFound(new { message = $"item with '{id}' not found" });
         }
+        #endregion
 
+        #region ADD ITEMS
         [HttpPost("addincome")]
         public async Task<ActionResult<Income>> AddIncome([FromBody] Income income)
         {
@@ -156,8 +155,9 @@ namespace MoneyManager.WWW.Controllers
 
             return CreatedAtAction(nameof(AddOutcome), outcome);
         }
+        #endregion
 
-        
+        #region EDIT ITEMS
         [HttpPut("editincome/{id}")]
         public async Task<IActionResult> PutIncome(int id, [FromBody] Income item)
         {
@@ -197,7 +197,9 @@ namespace MoneyManager.WWW.Controllers
 
             return Ok();
         }
+        #endregion
 
+        #region DELETE ITEM
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
@@ -213,5 +215,6 @@ namespace MoneyManager.WWW.Controllers
 
             return Ok();
         }
+        #endregion
     }
 }
