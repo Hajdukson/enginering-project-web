@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Models.DTOs;
@@ -19,22 +20,21 @@ namespace MoneyManager.WWW.Controllers
         #region CTOR, PRIVETE FIELDS
         private readonly MoneyManagerContext _context;
         private readonly ICalculator _expenseCalculator;
+        private readonly IClaimUserId _claimeUser;
         private readonly List<Item> _items;
-
-        public ItemsController(MoneyManagerContext context, ICalculator expenseCalculator)
+        private string LoggedUserId { get => _claimeUser.GetUserId((ClaimsIdentity)User.Identity); }
+        public ItemsController(MoneyManagerContext context, ICalculator expenseCalculator, IClaimUserId clameUser)
         {
             _context = context;
             _items = new List<Item>();
             _expenseCalculator = expenseCalculator;
+            _claimeUser = clameUser;
         }
         #endregion
 
         #region GET ALL ITEMS
         private async Task<List<Item>> GetItemsList()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
             var items = new List<Item>();
 
             var incomes = await _context.Incomes
@@ -48,7 +48,7 @@ namespace MoneyManager.WWW.Controllers
             items.AddRange(incomes);
             items.AddRange(outcomes);
 
-            items = items.Where(i => i.ApplicationUserId == claim.Value).ToList();
+            items = items.Where(i => i.ApplicationUserId == LoggedUserId).ToList();
 
             return items;
         }
@@ -56,9 +56,6 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet]
         public async Task<ActionResult<UserPanelDTO>> Index()
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
             UserPanelDTO userPanelDTO = new UserPanelDTO();
 
             try
@@ -71,7 +68,7 @@ namespace MoneyManager.WWW.Controllers
                     Price = item.Price,
                 }).ToList();
 
-                var loggedUser = await _context.ApplicationUsers.FirstOrDefaultAsync(appUser => appUser.Id == claim.Value);
+                var loggedUser = await _context.ApplicationUsers.FirstOrDefaultAsync(appUser => appUser.Id == LoggedUserId);
 
                 var userDTO = new UserDTO()
                 {
@@ -116,10 +113,7 @@ namespace MoneyManager.WWW.Controllers
         [HttpPost("addincome")]
         public async Task<ActionResult<Income>> AddIncome([FromBody] Income income)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (claim == null)
+            if (LoggedUserId == null)
             {
                 return NotFound(new { message = "app user not found" });
             }
@@ -136,7 +130,7 @@ namespace MoneyManager.WWW.Controllers
                 return BadRequest(new { message = "income was null" });
             }
 
-            income.ApplicationUserId = claim.Value;
+            income.ApplicationUserId = LoggedUserId;
 
             await _context.Incomes.AddAsync(income);
             await _context.SaveChangesAsync();
@@ -147,10 +141,7 @@ namespace MoneyManager.WWW.Controllers
         [HttpPost("addoutcome")]
         public async Task<ActionResult<Outcome>> AddOutcome([FromBody] Outcome outcome)
         {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
-
-            if (claim == null)
+            if (LoggedUserId == null)
             {
                 return NotFound(new { message = "app user not found" });
             }
@@ -167,7 +158,7 @@ namespace MoneyManager.WWW.Controllers
                 return BadRequest(new { message = "outcome was null" });
             }
 
-            outcome.ApplicationUserId = claim.Value;
+            outcome.ApplicationUserId = LoggedUserId;
 
             await _context.Outcomes.AddAsync(outcome);
             await _context.SaveChangesAsync();

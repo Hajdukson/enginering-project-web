@@ -11,16 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<MoneyManagerContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MoneyManagerWWWContext") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MoneyManagerContext") ?? throw new InvalidOperationException("Connection string 'MoneyManagerContext' not found.")));
 builder.Services.AddDbContext<MoneyManagerContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerWWWContext' not found.")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerContext' not found.")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<MoneyManagerContext>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICalculator, ExpenseCalculator>();
-
+builder.Services.AddSingleton<IClaimUserId, ClaimeUserId>();
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
