@@ -35,8 +35,4 @@
     <ProjectReference Include="..\MoneyManager.Services\MoneyManager.Services.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
 </Project>

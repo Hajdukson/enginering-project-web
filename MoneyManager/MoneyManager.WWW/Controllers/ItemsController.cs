@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
@@ -16,8 +17,8 @@ namespace MoneyManager.WWW.Controllers
     public class ItemsController : Controller
     {
         #region CTOR, PRIVETE FIELDS
-        private readonly ICalculator _expenseCalculator;
         private readonly MoneyManagerContext _context;
+        private readonly ICalculator _expenseCalculator;
         private readonly List<Item> _items;
 
         public ItemsController(MoneyManagerContext context, ICalculator expenseCalculator)
@@ -38,16 +39,16 @@ namespace MoneyManager.WWW.Controllers
 
             var incomes = await _context.Incomes
                 .Include(i => i.IncomeCategory)
-                .Include(u => u.IdentityUser).ToListAsync();
+                .Include(navigationPropertyPath: u => u.ApplicationUser).ToListAsync();
 
             var outcomes = await _context.Outcomes
                 .Include(o => o.OutcomeCategory)
-                .Include(u => u.IdentityUser).ToListAsync();
+                .Include(u => u.ApplicationUser).ToListAsync();
 
             items.AddRange(incomes);
             items.AddRange(outcomes);
 
-            items = items.Where(i => i.IdentityUserId == claim.Value).ToList();
+            items = items.Where(i => i.ApplicationUserId == claim.Value).ToList();
 
             return items;
         }
@@ -55,7 +56,11 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet]
         public async Task<ActionResult<UserPanelDTO>> Index()
         {
-            UserPanelDTO itemsDTO = new UserPanelDTO();
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            UserPanelDTO userPanelDTO = new UserPanelDTO();
+
             try
             {
                 var items = await GetItemsList();
@@ -66,12 +71,20 @@ namespace MoneyManager.WWW.Controllers
                     Price = item.Price,
                 }).ToList();
 
-                itemsDTO.Items = itemDTOs;
-                itemsDTO.TotalIncome = _expenseCalculator.CalculateIncome(items);
-                itemsDTO.TotalOutcome = _expenseCalculator.CalculateOutcome(items);
-                itemsDTO.Balance = _expenseCalculator.CalculateBalance(items);
+                var loggedUser = await _context.ApplicationUsers.FirstOrDefaultAsync(appUser => appUser.Id == claim.Value);
 
-                return itemsDTO;
+                var userDTO = new UserDTO()
+                {
+                    FullName = $"{loggedUser.FirstName}, {loggedUser.LastName}"
+                };
+
+                userPanelDTO.Items = itemDTOs;
+                userPanelDTO.TotalIncome = _expenseCalculator.CalculateIncome(items);
+                userPanelDTO.TotalOutcome = _expenseCalculator.CalculateOutcome(items);
+                userPanelDTO.Balance = _expenseCalculator.CalculateBalance(items);
+                userPanelDTO.AppUser = userDTO;
+
+                return userPanelDTO;
             }
             catch (DataException ex)
             {
@@ -123,7 +136,7 @@ namespace MoneyManager.WWW.Controllers
                 return BadRequest(new { message = "income was null" });
             }
 
-            income.IdentityUserId = claim.Value;
+            income.ApplicationUserId = claim.Value;
 
             await _context.Incomes.AddAsync(income);
             await _context.SaveChangesAsync();
@@ -154,7 +167,7 @@ namespace MoneyManager.WWW.Controllers
                 return BadRequest(new { message = "outcome was null" });
             }
 
-            outcome.IdentityUserId = claim.Value;
+            outcome.ApplicationUserId = claim.Value;
 
             await _context.Outcomes.AddAsync(outcome);
             await _context.SaveChangesAsync();
