@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess
+namespace MoneyManager.Repository
 {
     public interface IRepository<T> where T : class
     {

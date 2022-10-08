@@ -6,14 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
+using MoneyManager.Repository;
 
 namespace MoneyManager.WWW.Pages.Categories
 {
     public class DeleteModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
+        private readonly MoneyManagerContext _context;
 
-        public DeleteModel(MoneyManager.WWW.Data.MoneyManagerContext context)
+        public DeleteModel(MoneyManagerContext context)
         {
             _context = context;
         }

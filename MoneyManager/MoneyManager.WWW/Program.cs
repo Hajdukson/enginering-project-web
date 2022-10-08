@@ -1,10 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using MoneyManager.DataAccess;
+using MoneyManager.Repository;
 using MoneyManager.Services;
 using MoneyManager.Services.Interfeces;
-using MoneyManager.WWW.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 

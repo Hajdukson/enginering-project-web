@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 
-namespace MoneyManager.WWW.Data
+namespace MoneyManager.Repository
 {
     public class MoneyManagerContext : IdentityDbContext
     {

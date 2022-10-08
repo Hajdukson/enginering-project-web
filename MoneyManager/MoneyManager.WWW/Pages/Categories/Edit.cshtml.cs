@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
-using MoneyManager.WWW.Data;
+using MoneyManager.Repository;
 
 namespace MoneyManager.WWW.Pages.Categories
 {
     public class EditModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
+        private readonly MoneyManagerContext _context;
 
-        public EditModel(MoneyManager.WWW.Data.MoneyManagerContext context)
+        public EditModel(MoneyManagerContext context)
         {
             _context = context;
         }

@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
-using MoneyManager.WWW.Data;
+using MoneyManager.Repository;
 
 namespace MoneyManager.WWW.Pages.Categories
 {
     public class DetailsModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
+        private readonly MoneyManagerContext _context;
 
-        public DetailsModel(MoneyManager.WWW.Data.MoneyManagerContext context)
+        public DetailsModel(MoneyManagerContext context)
         {
             _context = context;
         }

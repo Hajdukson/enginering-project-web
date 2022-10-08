@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
-using MoneyManager.WWW.Data;
+using MoneyManager.Repository;
 
 namespace MoneyManager.WWW.Controllers
 {

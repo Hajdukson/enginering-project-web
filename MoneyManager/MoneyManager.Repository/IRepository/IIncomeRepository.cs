@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess
+namespace MoneyManager.Repository
 {
-    public interface IProductRepository : IRepository<Product>
+    public interface IIncomeRepository : IRepository<IncomeRepository>
     {
-        void Update(Product product);
+        void Update(Income item);
     }
 }

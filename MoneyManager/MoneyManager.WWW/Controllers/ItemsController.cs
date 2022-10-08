@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Models.DTOs;
+using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
-using MoneyManager.WWW.Data;
 using System.Data;
 using System.Security.Claims;
 

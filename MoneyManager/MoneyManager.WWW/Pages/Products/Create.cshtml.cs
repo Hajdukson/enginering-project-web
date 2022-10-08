@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MoneyManager.Models;
-using MoneyManager.WWW.Data;
+using MoneyManager.Repository;
 
 namespace MoneyManager.WWW.Pages.Products
 {
     public class CreateModel : PageModel
     {
-        private readonly MoneyManager.WWW.Data.MoneyManagerContext _context;
+        private readonly MoneyManagerContext _context;
 
-        public CreateModel(MoneyManager.WWW.Data.MoneyManagerContext context)
+        public CreateModel(MoneyManagerContext context)
         {
             _context = context;
         }

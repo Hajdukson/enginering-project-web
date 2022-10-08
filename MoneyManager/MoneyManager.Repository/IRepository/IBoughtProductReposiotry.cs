@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyManager.DataAccess
+namespace MoneyManager.Repository
 {
 	public interface IBoughtProductReposiotry : IRepository<BoughtProduct>
 	{
