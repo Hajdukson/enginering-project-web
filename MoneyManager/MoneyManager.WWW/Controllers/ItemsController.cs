@@ -53,14 +53,20 @@ namespace MoneyManager.WWW.Controllers
         }
         
         [HttpGet]
-        public async Task<ActionResult<ItemsDTO>> Index()
+        public async Task<ActionResult<UserPanelDTO>> Index()
         {
-            ItemsDTO itemsDTO = new ItemsDTO();
+            UserPanelDTO itemsDTO = new UserPanelDTO();
             try
             {
                 var items = await GetItemsList();
+                var itemDTOs = items.Select(item => new ItemDTO { 
+                    Id = item.Id,
+                    Type = item.Type,
+                    Name = item.Name,
+                    Price = item.Price,
+                }).ToList();
 
-                itemsDTO.Items = items;
+                itemsDTO.Items = itemDTOs;
                 itemsDTO.TotalIncome = _expenseCalculator.CalculateIncome(items);
                 itemsDTO.TotalOutcome = _expenseCalculator.CalculateOutcome(items);
                 itemsDTO.Balance = _expenseCalculator.CalculateBalance(items);
