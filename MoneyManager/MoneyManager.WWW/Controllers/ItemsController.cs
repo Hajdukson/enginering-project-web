@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Models.DTOs;
@@ -18,49 +19,29 @@ namespace MoneyManager.WWW.Controllers
     public class ItemsController : Controller
     {
         #region CTOR, PRIVETE FIELDS
-        private readonly MoneyManagerContext _context;
+        private readonly IUnitOfWork _dbContext;
         private readonly ICalculator _expenseCalculator;
         private readonly IClaimUserId _claimeUser;
-        private readonly List<Item> _items;
         private string LoggedUserId { get => _claimeUser.GetUserId((ClaimsIdentity)User.Identity); }
-        public ItemsController(MoneyManagerContext context, ICalculator expenseCalculator, IClaimUserId clameUser)
+        public ItemsController(
+            IUnitOfWork context, 
+            ICalculator expenseCalculator, 
+            IClaimUserId clameUser)
         {
-            _context = context;
-            _items = new List<Item>();
+            _dbContext = context;
             _expenseCalculator = expenseCalculator;
             _claimeUser = clameUser;
         }
         #endregion
 
         #region GET ALL ITEMS
-        private async Task<List<Item>> GetItemsList()
-        {
-            var items = new List<Item>();
-
-            var incomes = await _context.Incomes
-                .Include(i => i.IncomeCategory)
-                .Include(navigationPropertyPath: u => u.ApplicationUser).ToListAsync();
-
-            var outcomes = await _context.Outcomes
-                .Include(o => o.OutcomeCategory)
-                .Include(u => u.ApplicationUser).ToListAsync();
-
-            items.AddRange(incomes);
-            items.AddRange(outcomes);
-
-            items = items.Where(i => i.ApplicationUserId == LoggedUserId).ToList();
-
-            return items;
-        }
-        
         [HttpGet]
         public async Task<ActionResult<UserPanelDTO>> Index()
         {
-            UserPanelDTO userPanelDTO = new UserPanelDTO();
-
             try
             {
-                var items = await GetItemsList();
+                UserPanelDTO userPanelDTO = new UserPanelDTO();
+                var items = await _dbContext.Items.GetAllAsync(nameof(ApplicationUser));
                 var itemDTOs = items.Select(item => new ItemDTO { 
                     Id = item.Id,
                     Type = item.Type,
@@ -68,7 +49,7 @@ namespace MoneyManager.WWW.Controllers
                     Price = item.Price,
                 }).ToList();
 
-                var loggedUser = await _context.ApplicationUsers.FirstOrDefaultAsync(appUser => appUser.Id == LoggedUserId);
+                var loggedUser = await _dbContext.ApplicationUsers.GetFirstOrDefaultAsync(u => u.Id == LoggedUserId);
 
                 var userDTO = new UserDTO()
                 {
@@ -97,15 +78,14 @@ namespace MoneyManager.WWW.Controllers
         [Route("details")]
         public async Task<ActionResult<Item>> Details(int? id)
         {
-            var itmes = await GetItemsList();
-            var item = itmes.Find(i => i.Id == id);
-
-            if (item != null)
+            if (_dbContext.Items == null || _dbContext.Items.GetAll().Count() == 0)
             {
-                return item;
+                return NotFound(new { message = "There are no objects in Database." });
             }
 
-            return NotFound(new { message = $"item with '{id}' not found" });
+            var item = await _dbContext.Items.GetFirstOrDefaultAsync(i => i.Id == id, "IncomeCategory,OutcomeCategory");
+
+            return item;
         }
         #endregion
 
@@ -118,7 +98,7 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound(new { message = "app user not found" });
             }
 
-            var incomeCategory = await _context.IncomeCategories.FindAsync(income.IncomeCategoryId);
+            var incomeCategory = await _dbContext.Categories.GetFirstOrDefaultAsync(c => c.Id == income.IncomeCategoryId);
 
             if (incomeCategory == null)
             {
@@ -132,8 +112,8 @@ namespace MoneyManager.WWW.Controllers
 
             income.ApplicationUserId = LoggedUserId;
 
-            await _context.Incomes.AddAsync(income);
-            await _context.SaveChangesAsync();
+            await _dbContext.Incomes.AddAsync(income);
+            await _dbContext.SaveAsync();
 
             return CreatedAtAction(nameof(AddIncome), income);
         }
@@ -146,7 +126,7 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound(new { message = "app user not found" });
             }
 
-            var outcomeCategory = await _context.OutcomeCategories.FindAsync(outcome.OutcomeCategoryId);
+            var outcomeCategory = await _dbContext.Categories.GetFirstOrDefaultAsync(c => c.Id == outcome.OutcomeCategoryId);
 
             if (outcomeCategory == null)
             {
@@ -160,8 +140,8 @@ namespace MoneyManager.WWW.Controllers
 
             outcome.ApplicationUserId = LoggedUserId;
 
-            await _context.Outcomes.AddAsync(outcome);
-            await _context.SaveChangesAsync();
+            await _dbContext.Outcomes.AddAsync(outcome);
+            await _dbContext.SaveAsync();
 
             return CreatedAtAction(nameof(AddOutcome), outcome);
         }
@@ -171,7 +151,7 @@ namespace MoneyManager.WWW.Controllers
         [HttpPut("editincome/{id}")]
         public async Task<IActionResult> PutIncome(int id, [FromBody] Income item)
         {
-            var itemFromDb = await _context.Incomes.FindAsync(id);
+            var itemFromDb = await _dbContext.Incomes.GetFirstOrDefaultAsync(i => i.Id == id);
 
             if (itemFromDb == null)
             {
@@ -183,7 +163,7 @@ namespace MoneyManager.WWW.Controllers
             itemFromDb.TransactionDate = item.TransactionDate;
             itemFromDb.IncomeCategory = item.IncomeCategory;
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveAsync();
 
             return Ok();
         }
@@ -191,7 +171,7 @@ namespace MoneyManager.WWW.Controllers
         [HttpPut("editoutcome/{id}")]
         public async Task<IActionResult> PutOutcome(int id, [FromBody] Outcome item)
         {
-            var itemFromDb = await _context.Outcomes.FindAsync(id);
+            var itemFromDb = await _dbContext.Outcomes.GetFirstOrDefaultAsync(o => o.Id == id);
 
             if (itemFromDb == null)
             {
@@ -203,7 +183,7 @@ namespace MoneyManager.WWW.Controllers
             itemFromDb.TransactionDate = item.TransactionDate;
             itemFromDb.OutcomeCategory = item.OutcomeCategory;
 
-            await _context.SaveChangesAsync();
+            await _dbContext.SaveAsync();
 
             return Ok();
         }
@@ -213,15 +193,15 @@ namespace MoneyManager.WWW.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var item = await _context.Items.FindAsync(id);
+            var item = await _dbContext.Items.GetFirstOrDefaultAsync(i => i.Id == id);
 
             if(item == null)
             {
                 return NotFound(new { message = $"item with id: {id} not found" });
             }
 
-            _context.Items.Remove(item);
-            await _context.SaveChangesAsync();
+            _dbContext.Items.Remove(item);
+            await _dbContext.SaveAsync();
 
             return Ok();
         }

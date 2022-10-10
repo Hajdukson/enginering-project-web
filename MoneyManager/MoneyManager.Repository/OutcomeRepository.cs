@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 
 namespace MoneyManager.Repository
 {
-    public class ItemRepository : Repository<Item>, IItemRepository
+    public class OutcomeRepository : Repository<Outcome>, IOutcomeRepository
     {
         private readonly MoneyManagerContext _dbContext;
-        public ItemRepository(MoneyManagerContext dbContext) : base(dbContext)
+        public OutcomeRepository(MoneyManagerContext dbContext) : base(dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public void Update(Item item)
+        public void Update(Outcome item)
         {
-            _dbContext.Items.Update(item);
+            _dbContext.Outcomes.Update(item);
         }
     }
 }

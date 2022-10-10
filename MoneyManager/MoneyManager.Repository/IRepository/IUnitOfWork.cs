@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MoneyManager.Repository.IRepository;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,12 @@ namespace MoneyManager.Repository
 {
     public interface IUnitOfWork
     {
-        IBoughtProductReposiotry BoughtProduct { get; set; }
+        IBoughtProductReposiotry BoughtProduct { get; }
+        IItemRepository Items { get; }
+        IOutcomeRepository Outcomes { get; }
+        IIncomeRepository Incomes { get; }
+        IApplicationUserRepository ApplicationUsers { get; }
+        ICategoryRepository Categories { get; }
         Task SaveAsync();
     }
 }
