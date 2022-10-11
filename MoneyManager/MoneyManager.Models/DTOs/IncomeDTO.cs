@@ -8,6 +8,11 @@ namespace MoneyManager.Models.DTOs
 {
     public class IncomeDTO
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public IncomeCategory IncomeCategory { get; set; }
+        public DateTime TransactionDate { get; set; }
 
     }
 }

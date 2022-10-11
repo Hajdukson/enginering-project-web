@@ -34,6 +34,7 @@
     <ProjectReference Include="..\MoneyManager.Models\MoneyManager.Models.csproj" />
     <ProjectReference Include="..\MoneyManager.Repository\MoneyManager.Repository.csproj" />
     <ProjectReference Include="..\MoneyManager.Services\MoneyManager.Services.csproj" />
+    <ProjectReference Include="..\MoneyManager.Utility\MoneyManager.Utility.csproj" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,7 @@ using MoneyManager.Models;
 using MoneyManager.Models.DTOs;
 using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
+using MoneyManager.Utility;
 using System.Data;
 using System.Security.Claims;
 
@@ -42,25 +43,14 @@ namespace MoneyManager.WWW.Controllers
             {
                 UserPanelDTO userPanelDTO = new UserPanelDTO();
                 var items = await _dbContext.Items.GetAllAsync(nameof(ApplicationUser));
-                var itemDTOs = items.Select(item => new ItemDTO { 
-                    Id = item.Id,
-                    Type = item.Type,
-                    Name = item.Name,
-                    Price = item.Price,
-                }).ToList();
-
+                var itemDTOs = items.Select(item => item.ConverToItemDTO()).ToList();
                 var loggedUser = await _dbContext.ApplicationUsers.GetFirstOrDefaultAsync(u => u.Id == LoggedUserId);
-
-                var userDTO = new UserDTO()
-                {
-                    FullName = $"{loggedUser.FirstName}, {loggedUser.LastName}"
-                };
 
                 userPanelDTO.Items = itemDTOs;
                 userPanelDTO.TotalIncome = _expenseCalculator.CalculateIncome(items);
                 userPanelDTO.TotalOutcome = _expenseCalculator.CalculateOutcome(items);
                 userPanelDTO.Balance = _expenseCalculator.CalculateBalance(items);
-                userPanelDTO.AppUser = userDTO;
+                userPanelDTO.AppUser = loggedUser.ConverToUserDTO();
 
                 return userPanelDTO;
             }
@@ -76,7 +66,7 @@ namespace MoneyManager.WWW.Controllers
         #region GET ITEM DETAILS
         [HttpGet]
         [Route("details")]
-        public async Task<ActionResult<Item>> Details(int? id)
+        public async Task<ActionResult<ItemDetailsDTO>> Details(int? id)
         {
             if (_dbContext.Items == null || _dbContext.Items.GetAll().Count() == 0)
             {
@@ -85,7 +75,7 @@ namespace MoneyManager.WWW.Controllers
 
             var item = await _dbContext.Items.GetFirstOrDefaultAsync(i => i.Id == id, "IncomeCategory,OutcomeCategory");
 
-            return item;
+            return item.ConverToItemDetailsDTO();
         }
         #endregion
 
@@ -149,40 +139,43 @@ namespace MoneyManager.WWW.Controllers
 
         #region EDIT ITEMS
         [HttpPut("editincome/{id}")]
-        public async Task<IActionResult> PutIncome(int id, [FromBody] Income item)
+        public async Task<IActionResult> PutIncome(int id, Income item)
         {
-            var itemFromDb = await _dbContext.Incomes.GetFirstOrDefaultAsync(i => i.Id == id);
-
-            if (itemFromDb == null)
+            //var itemFromDb = await _dbContext.Incomes.GetFirstOrDefaultAsync(i => i.Id == id);
+            if (id == 0)
             {
-                return NotFound(new { message = $"item witd id:{id} not found" });
+                return NotFound();
             }
 
-            itemFromDb.Price = item.Price;
-            itemFromDb.Name = item.Name;
-            itemFromDb.TransactionDate = item.TransactionDate;
-            itemFromDb.IncomeCategory = item.IncomeCategory;
+            //if (itemFromDb == null)
+            //{
+            //    return NotFound(new { message = $"item witd id:{id} not found" });
+            //}
 
+            //itemFromDb.Price = item.Price;
+            //itemFromDb.Name = item.Name;
+            //itemFromDb.TransactionDate = item.TransactionDate;
+            //itemFromDb.IncomeCategory = item.IncomeCategory;
+            _dbContext.Incomes.Update(item);
             await _dbContext.SaveAsync();
 
             return Ok();
         }
 
         [HttpPut("editoutcome/{id}")]
-        public async Task<IActionResult> PutOutcome(int id, [FromBody] Outcome item)
+        public async Task<IActionResult> PutOutcome(int id, Outcome item)
         {
-            var itemFromDb = await _dbContext.Outcomes.GetFirstOrDefaultAsync(o => o.Id == id);
-
-            if (itemFromDb == null)
+            //var itemFromDb = await _dbContext.Outcomes.GetFirstOrDefaultAsync(o => o.Id == id);
+            if(id == 0)
             {
-                return NotFound(new { message = $"item with id:{id} not found" });
+                return NotFound();
             }
+            //if (itemFromDb == null)
+            //{
+            //    return NotFound(new { message = $"item with id:{id} not found" });
+            //}
 
-            itemFromDb.Price = item.Price;
-            itemFromDb.Name = item.Name;
-            itemFromDb.TransactionDate = item.TransactionDate;
-            itemFromDb.OutcomeCategory = item.OutcomeCategory;
-
+            _dbContext.Outcomes.Update(item);
             await _dbContext.SaveAsync();
 
             return Ok();

@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace MoneyManager.Models.DTOs
 {
-    public class ItemDTO
+    public class ItemDetailsDTO
     {
-        public ItemType Type { get; set; }
         public int Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
+        public Category Category { get; set; }
         public DateTime TransactionDate { get; set; }
+        public ItemType Type { get; set; }
     }
 }
