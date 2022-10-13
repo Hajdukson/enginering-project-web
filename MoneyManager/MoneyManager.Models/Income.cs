@@ -6,6 +6,7 @@ namespace MoneyManager.Models
     public class Income : Item
     {
         [ValidateNever]
+        [Required]
         public IncomeCategory? IncomeCategory { get; set; }
         public int? IncomeCategoryId { get; set; }
         public override ItemType Type => ItemType.Income;

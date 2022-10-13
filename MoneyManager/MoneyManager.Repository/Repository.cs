@@ -19,15 +19,6 @@ namespace MoneyManager.Repository
         {
             await _entities.AddAsync(entity);
         }
-        public async Task<IEnumerable<T>> GetAllAsync(string? includeProperties = null)
-        {
-            IQueryable<T> entities = _entities;
-            if (!string.IsNullOrEmpty(includeProperties))
-            {
-                IncludeProperties(ref entities, includeProperties);
-            }
-            return await entities.ToListAsync();
-        }
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> entities = _entities;
@@ -41,14 +32,25 @@ namespace MoneyManager.Repository
         }
         #endregion
         #region SYNC METHODS
-        public IEnumerable<T> GetAll(string? includeProperties = null)
+        public IQueryable<T> GetAll(IEnumerable<Expression<Func<T, bool>>>? filters = null, string ? includeProperties = null)
         {
             IQueryable<T> entities = _entities;
+
+            if(filters != null)
+            {
+                foreach (var filter in filters)
+                {
+                    if(filter != null)
+                        entities = entities.Where(filter);
+                }
+            }
+
             if (!string.IsNullOrEmpty(includeProperties))
             {
                 IncludeProperties(ref entities, includeProperties);
             }
-            return entities.ToList();
+
+            return entities;
         }
         public void Remove(T entity)
         {

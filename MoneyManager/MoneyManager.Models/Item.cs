@@ -18,14 +18,14 @@ namespace MoneyManager.Models
         [Required]
         [DataType(DataType.Currency)]
         [Column(TypeName = "decimal(18,4)")]
-        [Range(0, double.MaxValue, ErrorMessage = "Value must be greater than 0")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Value must be greater than 0")]
         public decimal Price { get ; set; } 
         [NotMapped]
         public virtual ItemType Type { get ; }
-        public string ApplicationUserId { get; set; }
+        public string? ApplicationUserId { get; set; }
         [ValidateNever]
         [ForeignKey("ApplicationUserId")]
-        public ApplicationUser ApplicationUser { get; set; }
+        public ApplicationUser? ApplicationUser { get; set; }
     }
 
     public enum ItemType

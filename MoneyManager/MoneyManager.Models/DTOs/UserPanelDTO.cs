@@ -9,7 +9,7 @@ namespace MoneyManager.Models.DTOs
 {
     public class UserPanelDTO
     {
-        public List<ItemDTO>? Items { get; set; }
+        public IEnumerable<ItemDTO> Items { get; set; }
         public decimal Balance { get; set; }
         public decimal TotalIncome { get; set; }
         public decimal TotalOutcome { get; set; }

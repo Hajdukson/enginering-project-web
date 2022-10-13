@@ -7,7 +7,7 @@ namespace MoneyManager.Utility
     public static class ConverToDTO
     {
         public static UserDTO ConverToUserDTO(this ApplicationUser user) => new UserDTO() { FullName = $"{user.FirstName} {user.LastName}"};
-        public static ItemDTO ConverToItemDTO(this Item item) => new ItemDTO()
+        public static ItemDTO ConverToItemsDTO(this Item item) => new ItemDTO()
         {
             Id = item.Id,
             Type = item.Type,
