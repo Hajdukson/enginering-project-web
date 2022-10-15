@@ -2,11 +2,7 @@
 
 ## Celem pracy inżynierskiej jest zaprogramowanie aplikacji do zarządzania budrzetem domowym (Money manager)
 
-## Skład grupy
-
-1. Michał Hajduk
-2. Joanna Banysz
-3. Patrycja Kanarkiewicz
+## Praca indywidualna
 
 ## Główne cechy
 
