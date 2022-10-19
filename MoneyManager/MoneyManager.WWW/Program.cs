@@ -18,6 +18,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICalculator, ExpenseCalculator>();
+builder.Services.AddScoped<IReceiptRecognizer, ReceiptRecognizer>();
 builder.Services.AddSingleton<IClaimUserId, ClaimeUserId>();
 
 builder.Services.AddControllers()

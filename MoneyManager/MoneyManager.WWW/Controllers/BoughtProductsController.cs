@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Repository;
+using MoneyManager.Services.Interfeces;
 
 namespace MoneyManager.WWW.Controllers
 {
@@ -15,10 +16,13 @@ namespace MoneyManager.WWW.Controllers
     public class BoughtProductsController : ControllerBase
     {
         private readonly MoneyManagerContext _context;
-
-        public BoughtProductsController(MoneyManagerContext context)
+        private readonly IReceiptRecognizer _receiptRecognizer;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public BoughtProductsController(MoneyManagerContext context, IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
+            _receiptRecognizer = receiptRecognizer;
         }
 
         // GET: api/BoughtProducts
@@ -87,6 +91,33 @@ namespace MoneyManager.WWW.Controllers
             }
 
             return NoContent();
+        }
+        [HttpPost("analize")]
+        public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
+        {
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+            if(file != null)
+            {
+                var filePath = Path.Combine(wwwRootPath, file.FileName);
+                using (var fileStreams = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStreams);
+                };
+                using (var fileStreams = new FileStream(filePath, FileMode.Open))
+                {
+                    try
+                    {
+                        return await _receiptRecognizer.AnalizeImage(fileStreams);
+                    }
+                    catch(BadHttpRequestException ex)
+                    {
+                        throw;
+                    }
+                    
+                };
+            }
+
+            return new List<BoughtProduct>();
         }
 
         // POST: api/BoughtProducts
