@@ -103,7 +103,12 @@ namespace MoneyManager.WWW.Controllers
                 {
                     file.CopyTo(fileStreams);
                 };
-                using (var fileStreams = new FileStream(filePath, FileMode.Open))
+                using (var fileStreams = new FileStream(filePath, 
+                    FileMode.Open, 
+                    FileAccess.Read, 
+                    FileShare.None, 
+                    4096, 
+                    FileOptions.DeleteOnClose))
                 {
                     try
                     {
@@ -116,7 +121,7 @@ namespace MoneyManager.WWW.Controllers
                     
                 };
             }
-
+            
             return new List<BoughtProduct>();
         }
 
