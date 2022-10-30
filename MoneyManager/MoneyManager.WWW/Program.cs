@@ -18,7 +18,15 @@ builder.Services.AddDefaultIdentity<IdentityUser>()
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICalculator, ExpenseCalculator>();
+builder.Services.AddScoped<IReceiptRecognizer, ReceiptRecognizer>();
 builder.Services.AddSingleton<IClaimUserId, ClaimeUserId>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("allowedOrigin",
+    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+    );
+});
 
 builder.Services.AddControllers()
     .ConfigureApiBehaviorOptions(options =>
@@ -51,6 +59,10 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.Urls.Add("https://*:7075");
+
+app.UseCors("allowedOrigin");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Repository;
+using MoneyManager.Services.Interfeces;
 
 namespace MoneyManager.WWW.Controllers
 {
@@ -15,10 +16,13 @@ namespace MoneyManager.WWW.Controllers
     public class BoughtProductsController : ControllerBase
     {
         private readonly MoneyManagerContext _context;
-
-        public BoughtProductsController(MoneyManagerContext context)
+        private readonly IReceiptRecognizer _receiptRecognizer;
+        private readonly IWebHostEnvironment _hostEnvironment;
+        public BoughtProductsController(MoneyManagerContext context, IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer)
         {
             _context = context;
+            _hostEnvironment = hostEnvironment;
+            _receiptRecognizer = receiptRecognizer;
         }
 
         // GET: api/BoughtProducts
@@ -31,8 +35,6 @@ namespace MoneyManager.WWW.Controllers
             }
 
             var products = await _context.BoughtProducts
-                .Include(b => b.Product)
-                .ThenInclude(b => b.ProductCategory)
                 .ToListAsync();
 
             return products;
@@ -47,7 +49,6 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound();
             }
             var boughtProduct = await _context.BoughtProducts
-                .Include(b => b.Product.ProductCategory)
                 .FirstAsync(b => b.Id == id);
 
             if (boughtProduct == null)
@@ -87,6 +88,51 @@ namespace MoneyManager.WWW.Controllers
             }
 
             return NoContent();
+        }
+        [HttpGet("analize")]
+        public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
+        {
+            string wwwRootPath = _hostEnvironment.WebRootPath;
+            if(file != null)
+            {
+                var filePath = Path.Combine(wwwRootPath, file.FileName);
+                using (var fileStreams = new FileStream(filePath, FileMode.Create))
+                {
+                    file.CopyTo(fileStreams);
+                };
+                using (var fileStreams = new FileStream(filePath, 
+                    FileMode.Open, 
+                    FileAccess.Read, 
+                    FileShare.None, 
+                    4096, 
+                    FileOptions.DeleteOnClose))
+                {
+                    try
+                    {
+                        return await _receiptRecognizer.AnalizeImage(fileStreams);
+                    }
+                    catch(BadHttpRequestException ex)
+                    {
+                        throw;
+                    }
+                    
+                };
+            }
+            
+            return Problem("Could not find any item");
+        }
+        [HttpPost("addboughtproducts")]
+        public async Task<ActionResult<List<BoughtProduct>>> AddBoughtProducts([FromBody] IEnumerable<BoughtProduct> boughtProducts)
+        {
+            if(boughtProducts == null)
+            {
+                return Problem("'Enumerable<BoughtProduct> boughtProducts' was null or empty.");
+            }
+
+            await _context.BoughtProducts.AddRangeAsync(boughtProducts);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("AddBoughtProducts", new {products = boughtProducts});
         }
 
         // POST: api/BoughtProducts
