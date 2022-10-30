@@ -35,8 +35,6 @@ namespace MoneyManager.WWW.Controllers
             }
 
             var products = await _context.BoughtProducts
-                .Include(b => b.Product)
-                .ThenInclude(b => b.ProductCategory)
                 .ToListAsync();
 
             return products;
@@ -51,7 +49,6 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound();
             }
             var boughtProduct = await _context.BoughtProducts
-                .Include(b => b.Product.ProductCategory)
                 .FirstAsync(b => b.Id == id);
 
             if (boughtProduct == null)
@@ -92,7 +89,7 @@ namespace MoneyManager.WWW.Controllers
 
             return NoContent();
         }
-        [HttpPost("analize")]
+        [HttpGet("analize")]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
         {
             string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -122,7 +119,20 @@ namespace MoneyManager.WWW.Controllers
                 };
             }
             
-            return new List<BoughtProduct>();
+            return Problem("Could not find any item");
+        }
+        [HttpPost("addboughtproducts")]
+        public async Task<ActionResult<List<BoughtProduct>>> AddBoughtProducts([FromBody] IEnumerable<BoughtProduct> boughtProducts)
+        {
+            if(boughtProducts == null)
+            {
+                return Problem("'Enumerable<BoughtProduct> boughtProducts' was null or empty.");
+            }
+
+            await _context.BoughtProducts.AddRangeAsync(boughtProducts);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("AddBoughtProducts", new {products = boughtProducts});
         }
 
         // POST: api/BoughtProducts

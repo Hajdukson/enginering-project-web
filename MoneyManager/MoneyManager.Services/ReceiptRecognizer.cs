@@ -27,12 +27,9 @@ namespace MoneyManager.Services
             AnalyzeResult receipts = operation.Value;
 
             var boughtProducts = new List<BoughtProduct>();
-            DateTime tranDate;
-
+            DateTimeOffset transactionDate = DateTime.Now;
             foreach (AnalyzedDocument receipt in receipts.Documents)
             {
-                var boughtProduct = new BoughtProduct();
-
                 if (receipt.Fields.TryGetValue("MerchantName", out DocumentField merchantNameField))
                 {
                     if (merchantNameField.FieldType == DocumentFieldType.String)
@@ -47,7 +44,7 @@ namespace MoneyManager.Services
                 {
                     if (transactionDateField.FieldType == DocumentFieldType.Date)
                     {
-                        DateTimeOffset transactionDate = transactionDateField.Value.AsDate();
+                        transactionDate = transactionDateField.Value.AsDate();
 
                         Console.WriteLine($"Transaction Date: '{transactionDate}', with confidence {transactionDateField.Confidence}");
                     }
@@ -59,7 +56,9 @@ namespace MoneyManager.Services
                     {
                         foreach (DocumentField itemField in itemsField.Value.AsList())
                         {
+                            var boughtProduct = new BoughtProduct();
                             Console.WriteLine("Item:");
+                            boughtProduct.BoughtDate = transactionDate.UtcDateTime;
 
                             if (itemField.FieldType == DocumentFieldType.Dictionary)
                             {
@@ -71,19 +70,24 @@ namespace MoneyManager.Services
                                     {
                                         string itemDescription = itemDescriptionField.Value.AsString();
 
+                                        boughtProduct.Name = itemDescription;
+
                                         Console.WriteLine($"  Description: '{itemDescription}', with confidence {itemDescriptionField.Confidence}");
                                     }
                                 }
 
-                                if (itemFields.TryGetValue("TotalPrice", out DocumentField itemTotalPriceField))
+                                if (itemFields.TryGetValue("Price", out DocumentField itemTotalPriceField))
                                 {
                                     if (itemTotalPriceField.FieldType == DocumentFieldType.Double)
                                     {
                                         double itemTotalPrice = itemTotalPriceField.Value.AsDouble();
 
+                                        boughtProduct.Price = (decimal)itemTotalPrice;
+
                                         Console.WriteLine($"  Total Price: '{itemTotalPrice}', with confidence {itemTotalPriceField.Confidence}");
                                     }
                                 }
+                                boughtProducts.Add(boughtProduct);
                             }
                         }
                     }
