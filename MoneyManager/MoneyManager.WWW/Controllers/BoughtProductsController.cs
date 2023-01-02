@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
+using System.Diagnostics;
 
 namespace MoneyManager.WWW.Controllers
 {
@@ -15,14 +11,17 @@ namespace MoneyManager.WWW.Controllers
     [ApiController]
     public class BoughtProductsController : ControllerBase
     {
+        private readonly IUnitOfWork _unitOfWork;
         private readonly MoneyManagerContext _context;
         private readonly IReceiptRecognizer _receiptRecognizer;
         private readonly IWebHostEnvironment _hostEnvironment;
-        public BoughtProductsController(MoneyManagerContext context, IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer)
+        //private readonly I
+        public BoughtProductsController(MoneyManagerContext context, IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer, IUnitOfWork unitOfWork)
         {
             _context = context;
             _hostEnvironment = hostEnvironment;
             _receiptRecognizer = receiptRecognizer;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: api/BoughtProducts
@@ -113,9 +112,8 @@ namespace MoneyManager.WWW.Controllers
                     }
                     catch(BadHttpRequestException ex)
                     {
-                        throw;
+                        return BadRequest(new { error = "Error"});
                     }
-                    
                 };
             }
             
@@ -133,6 +131,17 @@ namespace MoneyManager.WWW.Controllers
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("AddBoughtProducts", new {products = boughtProducts});
+        }
+
+        [HttpGet("distinctproducts")]
+        public async Task<ActionResult<IEnumerable<ProductSummary>>> GetDistinctProducts(DateTime? startDate, DateTime? endDate)
+        {
+            if(_context.BoughtProducts == null)
+            {
+                return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
+            }            
+
+            return await _unitOfWork.BoughtProduct.GetBoughtProductsSummaries(startDate, endDate);
         }
 
         // POST: api/BoughtProducts
