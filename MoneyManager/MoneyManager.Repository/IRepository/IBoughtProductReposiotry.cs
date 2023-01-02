@@ -10,5 +10,7 @@ namespace MoneyManager.Repository
 	public interface IBoughtProductReposiotry : IRepository<BoughtProduct>
 	{
 		void Update(BoughtProduct boughtProduct);
-	}
+		Task<List<ProductSummary>> GetBoughtProductsSummaries(DateTime? startDate = null, DateTime? endDate = null);
+
+    }
 }
