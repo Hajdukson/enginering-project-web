@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
+using System.Drawing.Printing;
 
 namespace MoneyManager.Repository
 {
@@ -15,18 +16,31 @@ namespace MoneyManager.Repository
             _dbContext.BoughtProducts.Update(boughtProduct);
         }
 
-		public async Task<List<ProductSummary>> GetBoughtProductsSummaries(DateTime? startDate = null, DateTime? endDate = null)
+		public async Task<List<ProductSummary>> GetBoughtProductsSummaries(string? name, DateTime? startDate = null, DateTime? endDate = null)
 		{
 			IQueryable<BoughtProduct> products;
 
-            if (startDate != null || endDate != null)
+            if (startDate != null && endDate != null)
 			{
                 products  = _dbContext.BoughtProducts.Where(bp => bp.BoughtDate >= startDate && bp.BoughtDate <= endDate);
+            }
+			else if(startDate != null)
+			{
+				products = _dbContext.BoughtProducts.Where(bp => bp.BoughtDate >= startDate);
+			}
+			else if(endDate != null)
+			{
+                products = _dbContext.BoughtProducts.Where(bp => bp.BoughtDate <= endDate);
             }
 			else
 			{
 				products = _dbContext.BoughtProducts;
             }
+
+			if(!string.IsNullOrEmpty(name))
+			{
+				products = products.Where(bp => bp.Name.ToLower().Contains(name.ToLower()));
+			}
 			
 			var distincProductsByName = products
 				.GroupBy(p => p.Name)

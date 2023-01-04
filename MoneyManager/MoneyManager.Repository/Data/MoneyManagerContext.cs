@@ -37,7 +37,15 @@ namespace MoneyManager.Repository
                 new BoughtProduct { Id = 22, BoughtDate = new DateTime(2022, 12, 20), Price = 2.24m, Name = "1 kg Jabłek" },
                 new BoughtProduct { Id = 23, BoughtDate = new DateTime(2022, 12, 23), Price = 2.28m, Name = "1 kg Jabłek" },
                 new BoughtProduct { Id = 24, BoughtDate = new DateTime(2022, 12, 30), Price = 2.30m, Name = "1 kg Jabłek" },
-                new BoughtProduct { Id = 25, BoughtDate = new DateTime(2023, 01, 01), Price = 2.31m, Name = "1 kg Jabłek" }
+                new BoughtProduct { Id = 25, BoughtDate = new DateTime(2023, 01, 01), Price = 2.31m, Name = "1 kg Jabłek" },
+                new BoughtProduct { Id = 26, BoughtDate = new DateTime(2022, 12, 01), Price = 3.19m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 28, BoughtDate = new DateTime(2022, 12, 05), Price = 2.07m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 29, BoughtDate = new DateTime(2022, 12, 08), Price = 2.10m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 30, BoughtDate = new DateTime(2022, 12, 15), Price = 2.20m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 31, BoughtDate = new DateTime(2022, 12, 20), Price = 2.24m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 32, BoughtDate = new DateTime(2022, 12, 23), Price = 2.28m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 33, BoughtDate = new DateTime(2022, 12, 30), Price = 2.30m, Name = "1 kg Banany" },
+                new BoughtProduct { Id = 34, BoughtDate = new DateTime(2023, 01, 01), Price = 3.00m, Name = "1 kg Banany" }
             );
             base.OnModelCreating(modelBuilder);
         }

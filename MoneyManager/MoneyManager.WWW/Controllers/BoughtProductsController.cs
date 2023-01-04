@@ -134,14 +134,14 @@ namespace MoneyManager.WWW.Controllers
         }
 
         [HttpGet("distinctproducts")]
-        public async Task<ActionResult<IEnumerable<ProductSummary>>> GetDistinctProducts(DateTime? startDate, DateTime? endDate)
+        public async Task<ActionResult<IEnumerable<ProductSummary>>> GetDistinctProducts(string? name, DateTime? startDate, DateTime? endDate)
         {
             if(_context.BoughtProducts == null)
             {
                 return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
             }            
 
-            return await _unitOfWork.BoughtProduct.GetBoughtProductsSummaries(startDate, endDate);
+            return await _unitOfWork.BoughtProduct.GetBoughtProductsSummaries(name, startDate, endDate);
         }
 
         // POST: api/BoughtProducts
