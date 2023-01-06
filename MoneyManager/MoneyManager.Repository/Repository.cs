@@ -19,6 +19,10 @@ namespace MoneyManager.Repository
         {
             await _entities.AddAsync(entity);
         }
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _entities.AddRangeAsync(entities);
+        }
         public async Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null)
         {
             IQueryable<T> entities = _entities;
