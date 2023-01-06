@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
+using NuGet.Packaging.Rules;
 using System.Diagnostics;
 
 namespace MoneyManager.WWW.Controllers
@@ -28,13 +29,12 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetBoughtProducts()
         {
-            if (_context.BoughtProducts == null)
+            if (_unitOfWork.BoughtProduct == null)
             {
                 return NotFound();
             }
 
-            var products = await _context.BoughtProducts
-                .ToListAsync();
+            var products = await _unitOfWork.BoughtProduct.GetAll().ToListAsync();
 
             return products;
         }
@@ -43,12 +43,12 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<BoughtProduct>> GetBoughtProduct(int id)
         {
-            if (_context.BoughtProducts == null)
+            if (_unitOfWork.BoughtProduct == null)
             {
                 return NotFound();
             }
-            var boughtProduct = await _context.BoughtProducts
-                .FirstAsync(b => b.Id == id);
+            var boughtProduct = await _unitOfWork.BoughtProduct
+                .GetFirstOrDefaultAsync(b => b.Id == id);
 
             if (boughtProduct == null)
             {
@@ -68,11 +68,10 @@ namespace MoneyManager.WWW.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(boughtProduct).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                _unitOfWork.BoughtProduct.Update(boughtProduct);
+                await _unitOfWork.SaveAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -127,8 +126,8 @@ namespace MoneyManager.WWW.Controllers
                 return Problem("'Enumerable<BoughtProduct> boughtProducts' was null or empty.");
             }
 
-            await _context.BoughtProducts.AddRangeAsync(boughtProducts);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.BoughtProduct.AddRangeAsync(boughtProducts);
+            await _unitOfWork.SaveAsync();
 
             return CreatedAtAction("AddBoughtProducts", new {products = boughtProducts});
         }
@@ -136,7 +135,7 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet("distinctproducts")]
         public async Task<ActionResult<IEnumerable<ProductSummary>>> GetDistinctProducts(string? name, DateTime? startDate, DateTime? endDate)
         {
-            if(_context.BoughtProducts == null)
+            if(_unitOfWork.BoughtProduct == null)
             {
                 return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
             }            
@@ -149,12 +148,8 @@ namespace MoneyManager.WWW.Controllers
         [HttpPost]
         public async Task<ActionResult<BoughtProduct>> PostBoughtProduct(BoughtProduct boughtProduct)
         {
-            if (_context.BoughtProducts == null)
-            {
-                return Problem("Entity set 'MoneyManagerWWWContext.BoughtProducts'  is null.");
-            }
-            _context.BoughtProducts.Add(boughtProduct);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.BoughtProduct.AddAsync(boughtProduct);
+            await _unitOfWork.SaveAsync();
 
             return CreatedAtAction("GetBoughtProduct", new { id = boughtProduct.Id }, boughtProduct);
         }
@@ -163,25 +158,25 @@ namespace MoneyManager.WWW.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBoughtProduct(int id)
         {
-            if (_context.BoughtProducts == null)
+            if (_unitOfWork.BoughtProduct == null)
             {
                 return NotFound();
             }
-            var boughtProduct = await _context.BoughtProducts.FindAsync(id);
+            var boughtProduct = await _unitOfWork.BoughtProduct.GetFirstOrDefaultAsync(bp => bp.Id == id);
             if (boughtProduct == null)
             {
                 return NotFound();
             }
 
-            _context.BoughtProducts.Remove(boughtProduct);
-            await _context.SaveChangesAsync();
+            _unitOfWork.BoughtProduct.Remove(boughtProduct);
+            await _unitOfWork.SaveAsync();
 
             return NoContent();
         }
 
         private bool BoughtProductExists(int id)
         {
-            return (_context.BoughtProducts?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _unitOfWork.BoughtProduct.GetAll().Any(e => e.Id == id);
         }
     }
 }
