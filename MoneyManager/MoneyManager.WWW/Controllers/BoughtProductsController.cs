@@ -5,6 +5,7 @@ using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
 using NuGet.Packaging.Rules;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace MoneyManager.WWW.Controllers
 {
@@ -13,13 +14,11 @@ namespace MoneyManager.WWW.Controllers
     public class BoughtProductsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly MoneyManagerContext _context;
         private readonly IReceiptRecognizer _receiptRecognizer;
         private readonly IWebHostEnvironment _hostEnvironment;
         //private readonly I
-        public BoughtProductsController(MoneyManagerContext context, IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer, IUnitOfWork unitOfWork)
+        public BoughtProductsController(IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer, IUnitOfWork unitOfWork)
         {
-            _context = context;
             _hostEnvironment = hostEnvironment;
             _receiptRecognizer = receiptRecognizer;
             _unitOfWork = unitOfWork;
@@ -27,16 +26,15 @@ namespace MoneyManager.WWW.Controllers
 
         // GET: api/BoughtProducts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetBoughtProducts()
+        public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetBoughtProducts(string? name)
         {
             if (_unitOfWork.BoughtProduct == null)
             {
                 return NotFound();
             }
 
-            var products = await _unitOfWork.BoughtProduct.GetAll().ToListAsync();
-
-            return products;
+            return await _unitOfWork.BoughtProduct.GetAll(new List<Expression<Func<BoughtProduct, bool>>> { 
+                !string.IsNullOrEmpty(name) ? bp => bp.Name == name : null}).ToListAsync();
         }
 
         // GET: api/BoughtProducts/5
