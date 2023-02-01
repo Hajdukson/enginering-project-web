@@ -15,8 +15,7 @@ namespace MoneyManager.WWW.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReceiptRecognizer _receiptRecognizer;
-        private readonly IWebHostEnvironment _hostEnvironment;
-        //private readonly I
+        private readonly IWebHostEnvironment _hostEnvironment;        
         public BoughtProductsController(IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer, IUnitOfWork unitOfWork)
         {
             _hostEnvironment = hostEnvironment;
@@ -121,7 +120,7 @@ namespace MoneyManager.WWW.Controllers
         {
             if(boughtProducts == null)
             {
-                return Problem("'Enumerable<BoughtProduct> boughtProducts' was null or empty.");
+                return Problem("'Enumerable<BoughtProduct> boughtProducts' was null.");
             }
 
             await _unitOfWork.BoughtProduct.AddRangeAsync(boughtProducts);
