@@ -12,14 +12,12 @@ namespace MoneyManager.Services
     {
         AzureKeyCredential _credential;
         DocumentAnalysisClient _client;
-        IHostingEnvironment _environment;
-        public ReceiptRecognizer(IConfiguration configuration, IHostingEnvironment environment)
+        public ReceiptRecognizer(IConfiguration configuration)
         {
             var key = configuration.GetValue<string>("FR.Settings:FR_KEY");
             var endpoint = configuration.GetValue<string>("FR.Settings:FR_ENDPOINT");
             _credential = new AzureKeyCredential(key);
             _client = new DocumentAnalysisClient(new Uri(endpoint), credential: _credential);
-            _environment = environment;
         }
         public async Task<List<BoughtProduct>> AnalizeImage(FileStream fileStreams)
         {
@@ -28,67 +26,47 @@ namespace MoneyManager.Services
 
             var boughtProducts = new List<BoughtProduct>();
             DateTimeOffset transactionDate = DateTime.Now;
-            foreach (AnalyzedDocument receipt in receipts.Documents)
+
+            AnalyzedDocument receipt = receipts.Documents[0];
+
+            if (receipt.Fields.TryGetValue("Items", out DocumentField itemsField))
             {
-                if (receipt.Fields.TryGetValue("MerchantName", out DocumentField merchantNameField))
+                if (itemsField.FieldType == DocumentFieldType.List)
                 {
-                    if (merchantNameField.FieldType == DocumentFieldType.String)
+                    foreach (DocumentField itemField in itemsField.Value.AsList())
                     {
-                        string merchantName = merchantNameField.Value.AsString();
+                        var boughtProduct = new BoughtProduct();
+                        Console.WriteLine("Item:");
+                        boughtProduct.BoughtDate = transactionDate.UtcDateTime;
 
-                        Console.WriteLine($"Merchant Name: '{merchantName}', with confidence {merchantNameField.Confidence}");
-                    }
-                }
-
-                if (receipt.Fields.TryGetValue("TransactionDate", out DocumentField transactionDateField))
-                {
-                    if (transactionDateField.FieldType == DocumentFieldType.Date)
-                    {
-                        transactionDate = transactionDateField.Value.AsDate();
-
-                        Console.WriteLine($"Transaction Date: '{transactionDate}', with confidence {transactionDateField.Confidence}");
-                    }
-                }
-
-                if (receipt.Fields.TryGetValue("Items", out DocumentField itemsField))
-                {
-                    if (itemsField.FieldType == DocumentFieldType.List)
-                    {
-                        foreach (DocumentField itemField in itemsField.Value.AsList())
+                        if (itemField.FieldType == DocumentFieldType.Dictionary)
                         {
-                            var boughtProduct = new BoughtProduct();
-                            Console.WriteLine("Item:");
-                            boughtProduct.BoughtDate = transactionDate.UtcDateTime;
+                            IReadOnlyDictionary<string, DocumentField> itemFields = itemField.Value.AsDictionary();
 
-                            if (itemField.FieldType == DocumentFieldType.Dictionary)
+                            if (itemFields.TryGetValue("Description", out DocumentField itemDescriptionField))
                             {
-                                IReadOnlyDictionary<string, DocumentField> itemFields = itemField.Value.AsDictionary();
-
-                                if (itemFields.TryGetValue("Description", out DocumentField itemDescriptionField))
+                                if (itemDescriptionField.FieldType == DocumentFieldType.String)
                                 {
-                                    if (itemDescriptionField.FieldType == DocumentFieldType.String)
-                                    {
-                                        string itemDescription = itemDescriptionField.Value.AsString();
+                                    string itemDescription = itemDescriptionField.Value.AsString();
 
-                                        boughtProduct.Name = itemDescription;
+                                    boughtProduct.Name = itemDescription;
 
-                                        Console.WriteLine($"  Description: '{itemDescription}', with confidence {itemDescriptionField.Confidence}");
-                                    }
+                                    Console.WriteLine($"  Description: '{itemDescription}', with confidence {itemDescriptionField.Confidence}");
                                 }
-
-                                if (itemFields.TryGetValue("Price", out DocumentField itemTotalPriceField))
-                                {
-                                    if (itemTotalPriceField.FieldType == DocumentFieldType.Double)
-                                    {
-                                        double itemTotalPrice = itemTotalPriceField.Value.AsDouble();
-
-                                        boughtProduct.Price = (decimal)itemTotalPrice;
-
-                                        Console.WriteLine($"  Total Price: '{itemTotalPrice}', with confidence {itemTotalPriceField.Confidence}");
-                                    }
-                                }
-                                boughtProducts.Add(boughtProduct);
                             }
+
+                            if (itemFields.TryGetValue("Price", out DocumentField itemTotalPriceField))
+                            {
+                                if (itemTotalPriceField.FieldType == DocumentFieldType.Double)
+                                {
+                                    double itemTotalPrice = itemTotalPriceField.Value.AsDouble();
+
+                                    boughtProduct.Price = (decimal)itemTotalPrice;
+
+                                    Console.WriteLine($"  Total Price: '{itemTotalPrice}', with confidence {itemTotalPriceField.Confidence}");
+                                }
+                            }
+                            boughtProducts.Add(boughtProduct);
                         }
                     }
                 }
