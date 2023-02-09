@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace MoneyManager.Repository
 {
-	public interface IBoughtProductReposiotry : IRepository<BoughtProduct>
+	public interface IBoughtProductRepository : IRepository<BoughtProduct>
 	{
 		void Update(BoughtProduct boughtProduct);
-		Task<List<ProductSummary>> GetBoughtProductsSummaries(string? name, DateTime? startDate = null, DateTime? endDate = null);
+		Task<List<ProductSummary>> GetBoughtProductsSummaries(
+			string? name, 
+			DateTime? startDate = null, 
+			DateTime? endDate = null);
 
     }
 }

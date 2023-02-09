@@ -17,7 +17,7 @@ namespace MoneyManager.Repository
             Categories = new CategoryRepository(_dataContext);
             
         }
-        public IBoughtProductReposiotry BoughtProduct { get; private set; }
+        public IBoughtProductRepository BoughtProduct { get; private set; }
         public IItemRepository Items { get; private set; }
         public IOutcomeRepository Outcomes { get; private set; }
         public IIncomeRepository Incomes { get; private set; }

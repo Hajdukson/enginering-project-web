@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
+using System.Data.Common;
 using System.Drawing.Printing;
 
 namespace MoneyManager.Repository
 {
-	public class BoughtProductRepository : Repository<BoughtProduct>, IBoughtProductReposiotry
+	public class BoughtProductRepository : Repository<BoughtProduct>, IBoughtProductRepository
 	{
 		private readonly MoneyManagerContext _dbContext;
 		public BoughtProductRepository(MoneyManagerContext dbContext) : base(dbContext)
@@ -16,7 +17,7 @@ namespace MoneyManager.Repository
             _dbContext.BoughtProducts.Update(boughtProduct);
         }
 
-		public async Task<List<ProductSummary>> GetBoughtProductsSummaries(string? name, DateTime? startDate = null, DateTime? endDate = null)
+		public async Task<List<ProductSummary>> GetBoughtProductsSummaries(string? name, DateTime? startDate, DateTime? endDate)
 		{
 			IQueryable<BoughtProduct> products;
 
@@ -41,14 +42,16 @@ namespace MoneyManager.Repository
 			{
 				products = products.Where(bp => bp.Name.ToLower().Contains(name.ToLower()));
 			}
-			
-			var distincProductsByName = products
+            await Console.Out.WriteLineAsync("Executing query...");
+            var distinctProductsByName = products
 				.GroupBy(p => p.Name)
 				.Select(bp => bp.First());
 
-			var productsSummaries = new List<ProductSummary>();
+            await Console.Out.WriteLineAsync(distinctProductsByName.ToQueryString());
 
-			foreach (var product in distincProductsByName)
+            var productsSummaries = new List<ProductSummary>();
+
+			foreach (var product in distinctProductsByName)
 			{
 				var singleProducts = await products
 					.Where(bp => bp.Name == product.Name)

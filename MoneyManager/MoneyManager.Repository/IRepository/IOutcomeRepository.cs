@@ -9,6 +9,6 @@ namespace MoneyManager.Repository.IRepository
 {
     public interface IOutcomeRepository : IRepository<Outcome>
     {
-        void Update(Outcome intem);
+        void Update(Outcome item);
     }
 }

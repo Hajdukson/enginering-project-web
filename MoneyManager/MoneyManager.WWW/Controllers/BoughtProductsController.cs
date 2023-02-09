@@ -84,7 +84,7 @@ namespace MoneyManager.WWW.Controllers
 
             return NoContent();
         }
-        [HttpGet("analize")]
+        [HttpGet("Analize")]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
         {
             string wwwRootPath = _hostEnvironment.WebRootPath;
@@ -115,7 +115,7 @@ namespace MoneyManager.WWW.Controllers
             
             return Problem("Could not find any item");
         }
-        [HttpPost("addboughtproducts")]
+        [HttpPost("AddBoughtProducts")]
         public async Task<ActionResult<List<BoughtProduct>>> AddBoughtProducts([FromBody] IEnumerable<BoughtProduct> boughtProducts)
         {
             if(boughtProducts == null)
@@ -129,7 +129,7 @@ namespace MoneyManager.WWW.Controllers
             return CreatedAtAction("AddBoughtProducts", new {products = boughtProducts});
         }
 
-        [HttpGet("distinctproducts")]
+        [HttpGet("DistinctProducts")]
         public async Task<ActionResult<IEnumerable<ProductSummary>>> GetDistinctProducts(string? name, DateTime? startDate, DateTime? endDate)
         {
             if(_unitOfWork.BoughtProduct == null)

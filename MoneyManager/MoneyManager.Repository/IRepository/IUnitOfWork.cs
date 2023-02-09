@@ -9,7 +9,7 @@ namespace MoneyManager.Repository
 {
     public interface IUnitOfWork
     {
-        IBoughtProductReposiotry BoughtProduct { get; }
+        IBoughtProductRepository BoughtProduct { get; }
         IItemRepository Items { get; }
         IOutcomeRepository Outcomes { get; }
         IIncomeRepository Incomes { get; }
