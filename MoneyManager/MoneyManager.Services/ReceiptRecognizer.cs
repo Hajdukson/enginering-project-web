@@ -33,6 +33,16 @@ namespace MoneyManager.Services
             {
                 if (itemsField.FieldType == DocumentFieldType.List)
                 {
+                    if (receipt.Fields.TryGetValue("TransactionDate", out DocumentField transactionDateField))
+                    {
+                        if (transactionDateField.FieldType == DocumentFieldType.Date)
+                        {
+                            transactionDate = transactionDateField.Value.AsDate();
+
+                            Console.WriteLine($"Transaction Date: '{transactionDate}', with confidence {transactionDateField.Confidence}");
+                        }
+                    }
+
                     foreach (DocumentField itemField in itemsField.Value.AsList())
                     {
                         var boughtProduct = new BoughtProduct();
@@ -68,16 +78,6 @@ namespace MoneyManager.Services
                             }
                             boughtProducts.Add(boughtProduct);
                         }
-                    }
-                }
-
-                if (receipt.Fields.TryGetValue("Total", out DocumentField totalField))
-                {
-                    if (totalField.FieldType == DocumentFieldType.Double)
-                    {
-                        double total = totalField.Value.AsDouble();
-
-                        Console.WriteLine($"Total: '{total}', with confidence '{totalField.Confidence}'");
                     }
                 }
             }
