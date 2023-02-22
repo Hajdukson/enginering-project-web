@@ -13,7 +13,7 @@ namespace MoneyManager.Repository
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
         IQueryable<T> GetAll(IEnumerable<Expression<Func<T, bool>>> filters = null, string? includeProperties = null);
-        void Remove(T entity);
+        T Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
     }
 }

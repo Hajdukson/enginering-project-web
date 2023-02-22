@@ -153,7 +153,7 @@ namespace MoneyManager.WWW.Controllers
 
         // DELETE: api/BoughtProducts/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBoughtProduct(int id)
+        public async Task<ActionResult<BoughtProduct>> DeleteBoughtProduct(int id)
         {
             if (_unitOfWork.BoughtProduct == null)
             {
@@ -165,10 +165,10 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound();
             }
 
-            _unitOfWork.BoughtProduct.Remove(boughtProduct);
+            var removedProduct = _unitOfWork.BoughtProduct.Remove(entity: boughtProduct);
             await _unitOfWork.SaveAsync();
 
-            return NoContent();
+            return removedProduct;
         }
 
         private bool BoughtProductExists(int id)

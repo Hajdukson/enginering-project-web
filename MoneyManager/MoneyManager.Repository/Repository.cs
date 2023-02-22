@@ -56,9 +56,10 @@ namespace MoneyManager.Repository
 
             return entities;
         }
-        public void Remove(T entity)
+        public T Remove(T entity)
         {
             _entities.Remove(entity);
+            return entity;
         }
         public void RemoveRange(IEnumerable<T> entities)
         {
