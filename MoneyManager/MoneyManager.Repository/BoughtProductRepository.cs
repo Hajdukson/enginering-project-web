@@ -60,13 +60,15 @@ namespace MoneyManager.Repository
 
                 var startProduct = singleProducts[0];
                 var endProduct = singleProducts[singleProducts.Count - 1];
+                var endPrice = endProduct.Price;
+                var startPrice = startProduct.Price == 0 ? 1 : startProduct.Price;
 
                 var productSummary = new ProductSummary()
 				{
 					Name = product.Name,
 					StartProduct = startProduct,
 					EndProduct = endProduct,
-					Inflation = Math.Round((endProduct.Price / startProduct.Price - 1), 2) * 100,
+					Inflation = Math.Round((endPrice / startPrice - 1), 2) * 100,
 				};
 
 				productsSummaries.Add(productSummary);
@@ -74,5 +76,24 @@ namespace MoneyManager.Repository
 
 			return productsSummaries;
         }
-	}
+
+        public List<BoughtProduct> DeleteProductsByName(IEnumerable<string> names)
+        {
+            var deletedProducts = new List<BoughtProduct>();
+
+            foreach (var name in names)
+            {
+                var products = _dbContext.BoughtProducts.Where(c => c.Name == name);
+
+                if (products.Count() > 0)
+                {
+                    this.RemoveRange(products);
+                    deletedProducts.AddRange(products);
+                }
+
+            }
+
+            return deletedProducts;
+        }
+    }
 }

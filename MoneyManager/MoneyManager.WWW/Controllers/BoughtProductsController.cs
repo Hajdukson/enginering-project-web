@@ -170,6 +170,20 @@ namespace MoneyManager.WWW.Controllers
 
             return removedProduct;
         }
+        [HttpDelete("DeleteByName")]
+        public async Task<ActionResult<List<BoughtProduct>>> DeleteProductsByName(IEnumerable<string> names)
+        {
+            if (_unitOfWork.BoughtProduct == null)
+            {
+                return NotFound();
+            }
+
+            var deletedProducts = _unitOfWork.BoughtProduct.DeleteProductsByName(names);
+
+            await _unitOfWork.SaveAsync();
+
+            return deletedProducts;
+        }
 
         private bool BoughtProductExists(int id)
         {

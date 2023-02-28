@@ -14,6 +14,6 @@ namespace MoneyManager.Repository
 			string? name, 
 			DateTime? startDate = null, 
 			DateTime? endDate = null);
-
+        List<BoughtProduct> DeleteProductsByName(IEnumerable<string> names);
     }
 }
