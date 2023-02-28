@@ -77,21 +77,27 @@ namespace MoneyManager.Repository
 			return productsSummaries;
         }
 
-        public List<BoughtProduct> DeleteProductsByName(IEnumerable<string> names)
-        {
-            var deletedProducts = new List<BoughtProduct>();
-
-            foreach (var name in names)
-            {
-                var products = _dbContext.BoughtProducts.Where(c => c.Name == name);
-
-                if (products.Count() > 0)
+		public List<BoughtProduct> DeleteProductsByName(IEnumerable<string> names)
+		{
+			var deletedProducts = new List<BoughtProduct>();
+			if (names != null && names.Count() > 0)
+			{
+                foreach (var name in names)
                 {
-                    this.RemoveRange(products);
-                    deletedProducts.AddRange(products);
-                }
+                    var products = _dbContext.BoughtProducts.Where(c => c.Name == name);
 
+                    if (products.Count() > 0)
+                    {
+                        this.RemoveRange(products);
+                        deletedProducts.AddRange(products);
+                    }
+
+                }
             }
+			else
+			{
+				return new List<BoughtProduct>();
+			}
 
             return deletedProducts;
         }
