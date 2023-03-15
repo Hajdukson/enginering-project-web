@@ -82,7 +82,7 @@ namespace MoneyManager.WWW.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
         [HttpGet("Analize")]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
