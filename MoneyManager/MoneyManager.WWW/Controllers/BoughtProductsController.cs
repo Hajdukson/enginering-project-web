@@ -15,7 +15,7 @@ namespace MoneyManager.WWW.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IReceiptRecognizer _receiptRecognizer;
-        private readonly IWebHostEnvironment _hostEnvironment;        
+        private readonly IWebHostEnvironment _hostEnvironment;
         public BoughtProductsController(IWebHostEnvironment hostEnvironment, IReceiptRecognizer receiptRecognizer, IUnitOfWork unitOfWork)
         {
             _hostEnvironment = hostEnvironment;
@@ -85,32 +85,49 @@ namespace MoneyManager.WWW.Controllers
             return Ok();
         }
         [HttpGet("Analize")]
-        public async Task<ActionResult<IEnumerable<BoughtProduct>>> AnalizeImage(IFormFile? file)
+        public async Task<ActionResult<List<BoughtProduct>>> AnalizeImage(IFormFile? file)
         {
-            string wwwRootPath = _hostEnvironment.WebRootPath;
+            string imagesFolder = _hostEnvironment.ContentRootPath + "\\ReceiptImages";
             if(file != null)
             {
-                var filePath = Path.Combine(wwwRootPath, file.FileName);
-                using (var fileStreams = new FileStream(filePath, FileMode.Create))
+                var fileGuid = Guid.NewGuid();
+
+                var imagePath = Path.Combine(imagesFolder, file.FileName);
+
+                using (var fileStreams = new FileStream(imagePath, FileMode.Create))
                 {
                     file.CopyTo(fileStreams);
                 };
-                using (var fileStreams = new FileStream(filePath, 
-                    FileMode.Open, 
-                    FileAccess.Read, 
-                    FileShare.None, 
-                    4096, 
-                    FileOptions.DeleteOnClose))
+
+                var fileInfo = new FileInfo(imagePath);
+                var filePath = fileInfo.FullName;
+
+                var newFilePath = string.Format("{0}\\{1}{2}", 
+                    filePath.Substring(0, filePath.LastIndexOf('\\')),
+                    fileGuid.ToString(),
+                    fileInfo.Extension);
+
+                fileInfo.MoveTo(newFilePath);
+
+                try
                 {
-                    try
+                    List<BoughtProduct> products = new List<BoughtProduct>();
+                    using (var fileStreams = new FileStream(fileInfo.FullName,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.None,
+                    4096))
                     {
-                        return await _receiptRecognizer.AnalizeImage(fileStreams);
+                        products = await _receiptRecognizer.AnalizeImage(fileStreams);
                     }
-                    catch(BadHttpRequestException ex)
-                    {
-                        return BadRequest(new { error = "Error"});
-                    }
-                };
+
+                    return products;
+                }
+                catch (BadHttpRequestException ex)
+                {
+                    return BadRequest(new { error = ex.Message });
+                }
+                
             }
             
             return Problem("Could not find any item");

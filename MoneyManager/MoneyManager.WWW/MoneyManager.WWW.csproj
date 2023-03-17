@@ -36,4 +36,8 @@
     <ProjectReference Include="..\MoneyManager.Utility\MoneyManager.Utility.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ReceiptImages\" />
+  </ItemGroup>
+
 </Project>

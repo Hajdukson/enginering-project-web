@@ -48,6 +48,7 @@ namespace MoneyManager.Services
                         var boughtProduct = new BoughtProduct();
                         Console.WriteLine("Item:");
                         boughtProduct.BoughtDate = transactionDate.UtcDateTime;
+                        boughtProduct.ImagePath = fileStreams.Name;
 
                         if (itemField.FieldType == DocumentFieldType.Dictionary)
                         {
