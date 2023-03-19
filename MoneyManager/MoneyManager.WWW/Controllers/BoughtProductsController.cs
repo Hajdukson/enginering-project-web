@@ -4,6 +4,7 @@ using MoneyManager.Models;
 using MoneyManager.Repository;
 using MoneyManager.Services.Interfeces;
 using NuGet.Packaging.Rules;
+using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
 
@@ -87,49 +88,37 @@ namespace MoneyManager.WWW.Controllers
         [HttpGet("Analize")]
         public async Task<ActionResult<List<BoughtProduct>>> AnalizeImage(IFormFile? file)
         {
-            string imagesFolder = _hostEnvironment.ContentRootPath + "\\ReceiptImages";
             if(file != null)
             {
-                var fileGuid = Guid.NewGuid();
+                var fileName = Guid.NewGuid().ToString();
+                var uploads = Path.Combine(_hostEnvironment.WebRootPath, @"images\receipts");
+                var fileExtension = Path.GetExtension(file.FileName);
 
-                var imagePath = Path.Combine(imagesFolder, file.FileName);
+                var image = Path.Combine(uploads, fileName + fileExtension);
 
-                using (var fileStreams = new FileStream(imagePath, FileMode.Create))
+                using (var fileStreams = new FileStream(image, FileMode.Create))
                 {
                     file.CopyTo(fileStreams);
                 };
 
-                var fileInfo = new FileInfo(imagePath);
-                var filePath = fileInfo.FullName;
-
-                var newFilePath = string.Format("{0}\\{1}{2}", 
-                    filePath.Substring(0, filePath.LastIndexOf('\\')),
-                    fileGuid.ToString(),
-                    fileInfo.Extension);
-
-                fileInfo.MoveTo(newFilePath);
-
                 try
                 {
-                    List<BoughtProduct> products = new List<BoughtProduct>();
-                    using (var fileStreams = new FileStream(fileInfo.FullName,
+                    using (var fileStreams = new FileStream(image,
                     FileMode.Open,
                     FileAccess.Read,
                     FileShare.None,
                     4096))
                     {
-                        products = await _receiptRecognizer.AnalizeImage(fileStreams);
+                        var products = await _receiptRecognizer.AnalizeImage(fileStreams);
+                        products.ForEach(p => p.ImagePath = @"images\receipts\" + fileName + fileExtension);
+                        return products;
                     }
-
-                    return products;
                 }
                 catch (BadHttpRequestException ex)
                 {
                     return BadRequest(new { error = ex.Message });
                 }
-                
             }
-            
             return Problem("Could not find any item");
         }
         [HttpPost("AddBoughtProducts")]
@@ -205,6 +194,13 @@ namespace MoneyManager.WWW.Controllers
             await _unitOfWork.SaveAsync();
 
             return deletedProducts;
+        }
+
+        [HttpGet("download")]
+        public IActionResult Download()
+        {
+            var filepath = Path.Combine(_hostEnvironment.ContentRootPath, "ReceiptImages", "image.jpg");
+            return File(System.IO.File.ReadAllBytes(filepath), "image/jpg", System.IO.Path.GetFileName(filepath));
         }
 
         private bool BoughtProductExists(int id)
