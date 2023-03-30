@@ -85,6 +85,22 @@ namespace MoneyManager.WWW.Controllers
 
             return Ok();
         }
+        [HttpDelete("DeleteImage")]
+        public ActionResult DeleteImage(string imagePath)
+        {
+            var filePath = Path.Combine(_hostEnvironment.WebRootPath, @$"{imagePath}");
+            if (imagePath == null) 
+            {
+                return NotFound("Path was null");
+            }
+
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+                return Ok();
+            }
+            return NotFound($"Image not found 'path={imagePath}'");
+        }
         [HttpGet("Analize")]
         public async Task<ActionResult<List<BoughtProduct>>> AnalizeImage(IFormFile? file)
         {
