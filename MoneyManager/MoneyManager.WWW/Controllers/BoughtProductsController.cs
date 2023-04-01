@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using MoneyManager.Models;
 using MoneyManager.Repository;
@@ -35,6 +36,15 @@ namespace MoneyManager.WWW.Controllers
 
             return await _unitOfWork.BoughtProduct.GetAll(new List<Expression<Func<BoughtProduct, bool>>> { 
                 !string.IsNullOrEmpty(name) ? bp => bp.Name == name : null}).ToListAsync();
+        }
+        [HttpGet("ReceiptProducts")]
+        public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetProductsFromConcreteReceipt(string imagePath)
+        {
+            if (imagePath == null) 
+            {
+                return NotFound("Image not found");
+            }
+            return await _unitOfWork.BoughtProduct.GetProductsFromConcreteReceipt(imagePath).ToListAsync();
         }
 
         // GET: api/BoughtProducts/5

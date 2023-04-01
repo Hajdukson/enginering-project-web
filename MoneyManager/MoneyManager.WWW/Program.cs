@@ -10,8 +10,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddDbContext<MoneyManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoneyManagerContext") ?? throw new InvalidOperationException("Connection string 'MoneyManagerContext' not found.")));
-builder.Services.AddDbContext<MoneyManagerContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'MoneyManagerContext' not found.")));
 
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<MoneyManagerContext>();

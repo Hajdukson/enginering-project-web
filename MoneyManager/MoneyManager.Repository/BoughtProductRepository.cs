@@ -101,5 +101,11 @@ namespace MoneyManager.Repository
 
             return deletedProducts;
         }
+
+		public IQueryable<BoughtProduct> GetProductsFromConcreteReceipt(string imagePath)
+		{
+			var productsFromConcreteReceipt = _dbContext.BoughtProducts.Where(bp => bp.ImagePath == imagePath);
+			return productsFromConcreteReceipt;
+		}
     }
 }

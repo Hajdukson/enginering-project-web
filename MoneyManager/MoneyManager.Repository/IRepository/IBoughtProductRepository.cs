@@ -15,5 +15,6 @@ namespace MoneyManager.Repository
 			DateTime? startDate = null, 
 			DateTime? endDate = null);
         List<BoughtProduct> DeleteProductsByName(IEnumerable<string> names);
+        IQueryable<BoughtProduct> GetProductsFromConcreteReceipt(string names);
     }
 }
