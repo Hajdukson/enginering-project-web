@@ -34,8 +34,11 @@ namespace MoneyManager.WWW.Controllers
                 return NotFound();
             }
 
-            return await _unitOfWork.BoughtProduct.GetAll(new List<Expression<Func<BoughtProduct, bool>>> { 
-                !string.IsNullOrEmpty(name) ? bp => bp.Name == name : null}).ToListAsync();
+            if(name != null)
+            {
+                return await _unitOfWork.BoughtProduct.GetAll(bp => bp.Name == name).ToListAsync();
+            }
+            return await _unitOfWork.BoughtProduct.GetAll().ToListAsync();
         }
         [HttpGet("ReceiptProducts")]
         public async Task<ActionResult<IEnumerable<BoughtProduct>>> GetProductsFromConcreteReceipt(string imagePath)

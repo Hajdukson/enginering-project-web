@@ -36,17 +36,13 @@ namespace MoneyManager.Repository
         }
         #endregion
         #region SYNC METHODS
-        public IQueryable<T> GetAll(IEnumerable<Expression<Func<T, bool>>>? filters = null, string ? includeProperties = null)
+        public IQueryable<T> GetAll(Expression<Func<T, bool>>? filter, string ? includeProperties = null)
         {
             IQueryable<T> entities = _entities;
 
-            if(filters != null)
+            if(filter != null)
             {
-                foreach (var filter in filters)
-                {
-                    if(filter != null)
-                        entities = entities.Where(filter);
-                }
+                entities = entities.Where(filter);
             }
 
             if (!string.IsNullOrEmpty(includeProperties))

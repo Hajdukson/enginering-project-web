@@ -11,6 +11,8 @@ using System.Security.Claims;
 
 namespace MoneyManager.WWW.Controllers
 {
+    // FUTURE UPDATES, TODOS
+    // Whole Controller requiers refactor in order to work as assumed
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
@@ -44,12 +46,7 @@ namespace MoneyManager.WWW.Controllers
             {
                 UserPanelDTO userPanelDTO = new UserPanelDTO();
 
-                var sortedItems = _dbContext.Items.GetAll(
-                    new List<Expression<Func<Item, bool>>> {
-                        !string.IsNullOrEmpty(searchString) ? i => i.Name.Contains(searchString) : null,
-                        startDate != null && endDate != null ? i => i.TransactionDate >= startDate && i.TransactionDate <= endDate : null
-                    },
-                    nameof(ApplicationUser)).ToList();
+                var sortedItems = _dbContext.Items.GetAll().ToList();
 
                 if (type != null)
                     sortedItems = sortedItems.Where(i => i.Type == type).ToList();

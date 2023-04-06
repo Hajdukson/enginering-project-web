@@ -12,7 +12,7 @@ namespace MoneyManager.Repository
         Task<T> GetFirstOrDefaultAsync(Expression<Func<T, bool>> filter, string? includeProperties = null);
         Task AddAsync(T entity);
         Task AddRangeAsync(IEnumerable<T> entities);
-        IQueryable<T> GetAll(IEnumerable<Expression<Func<T, bool>>> filters = null, string? includeProperties = null);
+        IQueryable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? includeProperties = null);
         T Remove(T entity);
         void RemoveRange(IEnumerable<T> entity);
     }
