@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "MoneyManager.WWW": {
+    "MoneyManager.WWW-Dev": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -9,12 +9,14 @@
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7075;http://localhost:7075;http://192.168.1.31:7075;https://192.168.1.31:7075"
     },
-    "IIS Express": {
-      "commandName": "IISExpress",
+    "MoneyManager.WWW-Prod": {
+      "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7075;http://localhost:7075;http://192.168.1.31:7075;https://192.168.1.31:7075"
     }
   },
   "iisSettings": {
