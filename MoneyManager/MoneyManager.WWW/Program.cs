@@ -56,6 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    // in production there is a bug that says 'collection have a fixed size 2'
     app.Urls.Add("https://*:7075");
 }
 
