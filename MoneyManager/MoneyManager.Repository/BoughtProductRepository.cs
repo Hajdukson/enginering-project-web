@@ -42,12 +42,11 @@ namespace MoneyManager.Repository
 			{
 				products = products.Where(bp => bp.Name.ToLower().Contains(name.ToLower()));
 			}
-            await Console.Out.WriteLineAsync("Executing query...");
-            var distinctProductsByName = products
+            
+            var distinctProductsByName = await products
 				.GroupBy(p => p.Name)
-				.Select(bp => bp.First());
-
-            await Console.Out.WriteLineAsync(distinctProductsByName.ToQueryString());
+				.Select(bp => bp.First())
+				.ToListAsync();
 
             var productsSummaries = new List<ProductSummary>();
 
