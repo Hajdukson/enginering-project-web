@@ -1,10 +1,11 @@
 # Money manager REST API
 
+It is part of [mobile app](https://github.com/Hajdukson/enginering-project-mobile)
 Contains logic responisble for CRUD operations.  
 
 ## Remarks
 
-Some pieces of repoziotry are not use in [Front-End](https://github.com/Hajdukson/enginering-project-mobile)
+Some pieces of repoziotry are not use in [mobile app](https://github.com/Hajdukson/enginering-project-mobile)
 
 ## Features
 
